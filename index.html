@@ -1147,9 +1147,7 @@
 
         function copiarEnlace() {
             const enlace = document.getElementById('share-link').value;
-            navigator.clipboard.writeText(enlace).then(() => {
-                alert(diccionario[idioma].copiado);
-            });
+            navigator.clipboard.writeText(enlace);
         }
 
         async function simularPartido() {
