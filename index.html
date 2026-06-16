@@ -1009,8 +1009,10 @@
                     div.appendChild(shorts);
                     
                     div.onclick = () => {
-                        alineacionesPorSlot[slotActual][tipoPos]--;
-                        dibujarCampo();
+                        if (alineacionesPorSlot[slotActual][tipoPos] > 1) {
+                            alineacionesPorSlot[slotActual][tipoPos]--;
+                            dibujarCampo();
+                        }
                     };
                     
                     contenedor.appendChild(div);
