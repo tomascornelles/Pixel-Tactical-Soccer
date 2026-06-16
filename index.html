@@ -898,7 +898,7 @@
             } else if (patron === 'v-linea') {
                 return `linear-gradient(90deg, transparent 48%, ${c1} 48%, ${c1} 52%, transparent 52%), linear-gradient(to bottom, ${c2}, ${c2})`;
             } else if (patron === 'damero') {
-                return `conic-gradient(${c1} 0deg 90deg, ${c2} 90deg 180deg) 0 0 / 8px 8px`;
+                return `repeating-conic-gradient(#808080 0 25%, #0000 0 50%) 50% / 20px 20px`;
             }
             return c1;
         }
