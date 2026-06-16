@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Tactical Soccer v5.4</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --pixel-size: 4px;
+            --bg-color: #181425;
+            --field-green: #38b764;
+            --field-dark: #257142;
+            --pixel-white: #ffffff;
+            --pixel-black: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Press Start 2P', monospace;
+            image-rendering: pixelated;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--pixel-white);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            min-height: 100vh;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pixel-box {
+            border: 4px solid var(--pixel-white);
+            background: #262b44;
+            padding: 15px;
+            box-shadow: 0 6px 0 var(--pixel-black);
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .pixel-btn {
+            background: #e4a672;
+            border: 4px solid var(--pixel-white);
+            color: var(--pixel-black);
+            padding: 10px;
+            cursor: pointer;
+            font-size: 10px;
+            margin: 5px;
+            display: inline-block;
+            box-shadow: 0 4px 0 var(--pixel-black);
+        }
+
+        .pixel-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--pixel-black);
+        }
+
+        .pixel-btn:disabled {
+            background: #a2a2a2 !important;
+            color: #555 !important;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: 0 4px 0 var(--pixel-black) !important;
+        }
+
+        .slots-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 10px;
+        }
+
+        .slot-tab {
+            background: #3a4466;
+            border: 3px solid var(--pixel-white);
+            padding: 8px;
+            flex: 1;
+            text-align: center;
+            margin: 0 2px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .slot-tab.active {
+            background: #f4b41b;
+            color: var(--pixel-black);
+        }
+
+        .star-toggle-container {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #soccer-field {
+            width: 100%;
+            max-width: 500px;
+            height: 340px;
+            background: repeating-linear-gradient(to bottom, var(--field-green), var(--field-green) 30px, var(--field-dark) 30px, var(--field-dark) 60px);
+            border: 6px solid var(--pixel-white);
+            box-shadow: 0 8px 0 var(--pixel-black);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .field-line {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .field-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            min-height: 55px;
+            z-index: 2;
+        }
+
+        /* --- JUGADOR PIXEL SIN DETALLE DE CUELLO --- */
+        .player-pixel {
+            width: 34px;
+            height: 36px;
+            border: 2px solid var(--pixel-white);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 3px 0 var(--pixel-black);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .jersey-zone {
+            flex: 1.5; 
+            width: 100%;
+        }
+
+        .shorts-zone {
+            flex: 0.5; 
+            width: 100%;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* --- CONTENEDOR PREVISUALIZACIÓN CONFIG --- */
+        .preview-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            background: #1d2136;
+            border: 3px dashed #fff;
+            margin-bottom: 15px;
+        }
+
+        /* --- SELECTORES COLOR --- */
+        .color-picker-select {
+            width: 100%;
+            height: 38px;
+            cursor: pointer;
+            font-size: 0px; 
+            color: transparent;
+            text-shadow: 0 0 0 transparent;
+        }
+
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .pattern-opt {
+            border: 3px solid white;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #3a4466;
+            position: relative;
+        }
+
+        .pattern-opt.selected {
+            border-color: #f4b41b;
+            background: #4d5880;
+        }
+
+        .pattern-preview {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #fff;
+        }
+
+        .screen { display: none; width: 100%; max-width: 500px; }
+        .screen.active { display: block; }
+
+        input[type="text"], select {
+            background: #181425;
+            border: 3px solid var(--pixel-white);
+            color: var(--pixel-white);
+            padding: 8px;
+            font-size: 10px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        #resultado-lista {
+            list-style: none;
+            padding: 0;
+            line-height: 1.8;
+        }
+        #resultado-lista li {
+            margin-bottom: 8px;
+            padding: 8px;
+            border-bottom: 1px dashed #555;
+        }
+
+        footer {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div id="screen-setup" class="screen active pixel-box">
+            <h2 id="lbl-config-equipo">CONFIGURAR EQUIPO</h2>
+            
+            <label id="lbl-nombre-equipo">Nombre del Equipo:</label>
+            <input type="text" id="input-team-name" value="Pixel FC">
+            <br><br>
+
+            <div class="preview-wrapper">
+                <div class="player-pixel" id="jersey-preview" style="transform: scale(1.6); cursor: default; margin: 10px 0;">
+                    <div class="jersey-zone" id="preview-jersey-layer"></div>
+                    <div class="shorts-zone" id="preview-shorts-layer"></div>
+                </div>
+            </div>
+            
+            <label id="lbl-color1">Color Principal Camiseta:</label>
+            <select id="select-color1" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
+            <br><br>
+
+            <label id="lbl-color2">Color Secundario Camiseta:</label>
+            <select id="select-color2" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
+            <br><br>
+
+            <label id="lbl-color-pants">Color del Pantalón:</label>
+            <select id="select-color-pants" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
+            <br><br>
+
+            <label id="lbl-patron">Patrón de Camiseta:</label>
+            <div class="pattern-grid">
+                <div class="pattern-opt" id="p-solido" onclick="seleccionarPatron('solido')">
+                    <div class="pattern-preview" style="background: #ffffff;"></div>
+                </div>
+                <div class="pattern-opt" id="p-rayas" onclick="seleccionarPatron('rayas')">
+                    <div class="pattern-preview" style="background: repeating-linear-gradient(90deg, #ffffff, #ffffff 5px, #9b9b9b 5px, #9b9b9b 10px);"></div>
+                </div>
+                <div class="pattern-opt" id="p-mitad" onclick="seleccionarPatron('mitad')">
+                    <div class="pattern-preview" style="background: linear-gradient(90deg, #ffffff 50%, #9b9b9b 50%);"></div>
+                </div>
+                <div class="pattern-opt" id="p-diagonal" onclick="seleccionarPatron('diagonal')">
+                    <div class="pattern-preview" style="background: linear-gradient(135deg, #ffffff 50%, #9b9b9b 50%);"></div>
+                </div>
+            </div>
+            <br><br>
+            <button class="pixel-btn" style="width:100%" onclick="guardarPerfil()" id="btn-comenzar">EMPEZAR DESAFÍO</button>
+        </div>
+
+        <div id="screen-tactics" class="screen">
+            <div class="slots-container" id="slots-header">
+                <div class="slot-tab active" id="tab-1" onclick="navegarASlot(1)">1</div>
+                <div class="slot-tab" id="tab-2" onclick="navegarASlot(2)">2</div>
+                <div class="slot-tab" id="tab-3" onclick="navegarASlot(3)">3</div>
+                <div class="slot-tab" id="tab-4" onclick="navegarASlot(4)">4</div>
+                <div class="slot-tab" id="tab-5" onclick="navegarASlot(5)">5</div>
+                <div class="slot-tab" id="tab-6" onclick="navegarASlot(6)">6</div>
+            </div>
+
+            <div class="star-toggle-container pixel-box">
+                <input type="checkbox" id="chk-star" onchange="toggleEstrella()" style="transform: scale(1.5); cursor:pointer;">
+                <label for="chk-star" id="lbl-estrella" style="cursor:pointer;">MARCAR JUGADA ESTRELLA (x2 GOLES)</label>
+            </div>
+
+            <p id="lbl-instruccion-campo" style="color: #cbd6e2; font-size: 8px; text-align: center; margin-bottom: 5px;">
+                [Click en un jugador para quitarlo]
+            </p>
+
+            <div id="soccer-field">
+                <div class="field-line"></div>
+                <div class="field-row" id="row-del"></div>
+                <div class="field-row" id="row-med"></div>
+                <div class="field-row" id="row-def"></div>
+                <div class="field-row" id="row-por">
+                    <div class="player-pixel" style="cursor: default;" id="gk-player">
+                        <div class="jersey-zone" style="background: #41a6f6 !important;"></div>
+                        <div class="shorts-zone" style="background: #ffffff !important; flex: 0.5;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pixel-box" style="margin-top:15px; text-align:center;">
+                <div id="panel-creacion">
+                    <p id="lbl-anyadir">Añadir Jugadores (Max 10):</p>
+                    <button class="pixel-btn" id="btn-add-def" onclick="anyadirJugador('def')">DEF +1</button>
+                    <button class="pixel-btn" id="btn-add-med" onclick="anyadirJugador('med')">MED +1</button>
+                    <button class="pixel-btn" id="btn-add-del" onclick="anyadirJugador('del')">DEL +1</button>
+                    <p id="lbl-info-cambios-contador" style="color:#f4b41b; margin: 10px 0 0 0; font-size: 9px; display:none;"></p>
+                </div>
+
+                <hr style="border: 2px solid white; margin: 15px 0;">
+                <button class="pixel-btn" id="btn-accion-slot" style="width:100%; background:#38b764; color: white;" onclick="avanzarSlot()">SIGUIENTE SLOT ➔</button>
+            </div>
+        </div>
+
+        <div id="screen-share" class="screen pixel-box" style="text-align:center;">
+            <h2 id="lbl-listo">¡DESAFÍO LISTO!</h2>
+            <p id="lbl-copiar-inst">Copia este enlace y envíaselo a tu rival:</p>
+            <input type="text" id="share-link" readonly style="text-align:center; margin-bottom:15px;">
+            <button class="pixel-btn" onclick="copiarEnlace()" id="btn-copiar">COPIAR ENLACE</button>
+        </div>
+
+        <div id="screen-result" class="screen pixel-box">
+            <h2 style="text-align:center;" id="lbl-resumen">RESUMEN DEL PARTIDO</h2>
+            <h1 style="text-align:center; font-size:24px; color:#f4b41b;" id="marcador-final">0 - 0</h1>
+            <hr style="border: 2px solid white;">
+            
+            <ul id="resultado-lista"></ul>
+            
+            <div id="panel-retorno-rival" style="display:none; text-align:center; margin: 15px 0; padding:10px; border:2px dashed #f4b41b;">
+                <p id="lbl-retorno-inst" style="font-size:8px;">¡Envía el resultado de vuelta al retador para que vea el desenlace!</p>
+                <input type="text" id="share-back-link" readonly style="text-align:center; margin-bottom:10px;">
+                <button class="pixel-btn" onclick="copiarEnlaceRetorno()" id="btn-copiar-retorno">COPIAR ENLACE RESULTADO</button>
+            </div>
+
+            <button class="pixel-btn" style="width:100%" onclick="irAInicio()" id="btn-nuevo">CREAR NUEVO DESAFÍO</button>
+        </div>
+    </div>
+
+    <footer>
+        <button class="pixel-btn" onclick="toggleIdioma()" id="btn-idioma">ES/EN</button>
+    </footer>
+
+    <script>
+        // --- CONFIGURACIÓN SUPABASE ---
+        const SUPABASE_URL = "https://acftekfljjbsfyptlwuu.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_VZpQXtRu-KCezbQUtzbl4Q_B91tm8wd"; 
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+        // Paleta de colores con el naranja exacto: rgb(255, 116, 0)
+        const paletaColores = [
+            { hex: "#b13e53" }, { hex: "#1a8cff" }, { hex: "#38b764" }, { hex: "#f4b41b" },
+            { hex: "#ffffff" }, { hex: "#000000" }, { hex: "#743fb2" }, { hex: "rgb(255, 116, 0)" }
+        ];
+
+        const nombresAleatorios = ["Chipi Chipi FC", "Retro United", "8-Bit Athletic", "Pixel Stars", "Insert Coin FC", "Arcade City"];
+        const patronesDisponibles = ["solido", "rayas", "mitad", "diagonal"];
+
+        // --- MULTIIDIOMA UNIFICADO ---
+        const diccionario = {
+            es: {
+                configEquipo: "CONFIGURAR EQUIPO", 
+                aceptarDesafio: "ACEPTAR DESAFÍO",
+                nombreEquipo: "Nombre del Equipo:", 
+                comenzar: "EMPEZAR DESAFÍO",
+                estrella: "MARCAR JUGADA ESTRELLA (x2 GOLES)", 
+                anyadir: "Añadir Jugadores (Max 10):",
+                sigSlot: "SIGUIENTE SLOT ➔", 
+                envDesafio: "🖨️ ENVIAR DESAFÍO ➔", 
+                envReto: "⚽ ENVIAR RESULTADO ➔", 
+                listo: "¡DESAFÍO LISTO!",
+                copiarInst: "Copia este enlace y envíaselo a tu rival:", 
+                copiar: "COPIAR ENLACE", 
+                resumen: "RESUMEN DEL PARTIDO",
+                nuevo: "CREAR NUEVO DESAFÍO", 
+                copiado: "¡Copiado!", 
+                errorCambios: "Límite de 3 cambios superado en el total del partido. Revierta modificaciones para continuar.",
+                errorMin: "Debes tener al menos 1 jugador en cada línea (Defensa, Medio, Delantero).",
+                txtGol: "{m}' ¡GOL de {equipo}!", 
+                txtEmpateGlobal: "Empate",
+                autobus: "Autobús", 
+                posesion: "Posesión", 
+                heavyMetal: "Heavy Metal",
+                cambiosUsados: "Cambios acumulados: ", 
+                instruccionCampo: "[Click en un jugador para quitarlo]",
+                lblColor1: "Color Principal Camiseta:",
+                lblColor2: "Color Secundario Camiseta:",
+                lblColorPants: "Color del Pantalón:",
+                lblPatron: "Patrón de Camiseta:",
+                retornoInst: "¡Envía el resultado de vuelta al retador para que vea el desenlace!",
+                copiarRetorno: "COPIAR ENLACE RESULTADO"
+            },
+            en: {
+                configEquipo: "TEAM CONFIG", 
+                aceptarDesafio: "ACCEPT CHALLENGE",
+                nombreEquipo: "Team Name:", 
+                comenzar: "START CHALLENGE",
+                estrella: "MARK STAR PLAY (x2 GOALS)", 
+                anyadir: "Add Players (Max 10):",
+                sigSlot: "NEXT SLOT ➔", 
+                envDesafio: "🖨️ SEND CHALLENGE ➔", 
+                envReto: "⚽ SEND RESULT ➔", 
+                listo: "CHALLENGE READY!",
+                copiarInst: "Copy this link and send it to your rival:", 
+                copiar: "COPY LINK", 
+                resumen: "MATCH SUMMARY",
+                nuevo: "CREATE NEW CHALLENGE", 
+                copiado: "Copied!", 
+                errorCambios: "Limit of 3 changes exceeded across the match. Revert modifications to proceed.",
+                errorMin: "You must have at least 1 player in each line (Def, Mid, Fwd).",
+                txtGol: "{m}' GOAL for {equipo}!", 
+                txtEmpateGlobal: "Draw",
+                autobus: "The Bus", 
+                posesion: "Possession", 
+                heavyMetal: "Heavy Metal",
+                cambiosUsados: "Accumulated changes: ", 
+                instruccionCampo: "[Click on a player to remove]",
+                lblColor1: "Main Jersey Color:",
+                lblColor2: "Secondary Jersey Color:",
+                lblColorPants: "Shorts Color:",
+                lblPatron: "Jersey Pattern:",
+                retornoInst: "Send the result back to the challenger to let them see the outcome!",
+                copiarRetorno: "COPY RESULT LINK"
+            }
+        };
+
+        // Detección automática del idioma del sistema o carga desde localStorage
+        let idioma = 'es';
+        function inicializarIdioma() {
+            const guardado = localStorage.getItem('pixel_tactical_lang');
+            if (guardado && (guardado === 'es' || guardado === 'en')) {
+                idioma = guardado;
+            } else {
+                const langSistema = navigator.language || navigator.userLanguage;
+                if (langSistema && langSistema.startsWith('en')) {
+                    idioma = 'en';
+                } else {
+                    idioma = 'es';
+                }
+            }
+        }
+
+        let modoRival = false; 
+        let modoVerResultado = false;
+        let partidoId = null;
+
+        let perfil = { nombre: "Pixel FC", color1: "#b13e53", color2: "#f4b41b", colorPants: "#ffffff", patron: "solido" };
+        let slotActual = 1;
+        let estrellaMarcada = null; 
+        
+        let alineacionesPorSlot = {
+            1: { def: 1, med: 1, del: 1 }, 2: null, 3: null, 4: null, 5: null, 6: null
+        };
+
+        function construirSelectoresColores() {
+            const selectores = [
+                document.getElementById('select-color1'),
+                document.getElementById('select-color2'),
+                document.getElementById('select-color-pants')
+            ];
+
+            selectores.forEach(sel => {
+                const valorPrevio = sel.value;
+                sel.innerHTML = '';
+                paletaColores.forEach(c => {
+                    let opt = document.createElement('option');
+                    opt.value = c.hex;
+                    opt.style.backgroundColor = c.hex;
+                    opt.style.color = c.hex;
+                    opt.innerText = "■■■■■■■■■";
+                    sel.appendChild(opt);
+                });
+                if(valorPrevio) sel.value = valorPrevio;
+            });
+        }
+
+        function actualizarColoresDesdeSelect() {
+            perfil.color1 = document.getElementById('select-color1').value;
+            perfil.color2 = document.getElementById('select-color2').value;
+            perfil.colorPants = document.getElementById('select-color-pants').value;
+
+            document.getElementById('select-color1').style.backgroundColor = perfil.color1;
+            document.getElementById('select-color2').style.backgroundColor = perfil.color2;
+            document.getElementById('select-color-pants').style.backgroundColor = perfil.colorPants;
+
+            renderizarPrevisualizacionEquipacion();
+        }
+
+        function seleccionarPatron(tipo) {
+            document.querySelectorAll('.pattern-opt').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`p-${tipo}`).classList.add('selected');
+            perfil.patron = tipo;
+            renderizarPrevisualizacionEquipacion();
+        }
+
+        function renderizarPrevisualizacionEquipacion() {
+            const capaJersey = document.getElementById('preview-jersey-layer');
+            const capaShorts = document.getElementById('preview-shorts-layer');
+            if (capaJersey && capaShorts) {
+                capaJersey.style.background = obtenerEstiloCamiseta(perfil.color1, perfil.color2, perfil.patron);
+                capaShorts.style.background = perfil.colorPants;
+            }
+        }
+
+        function aplicarCombinacionAleatoria() {
+            const nombreRand = nombresAleatorios[Math.floor(Math.random() * nombresAleatorios.length)];
+            const c1Rand = paletaColores[Math.floor(Math.random() * paletaColores.length)].hex;
+            
+            let c2Rand = paletaColores[Math.floor(Math.random() * paletaColores.length)].hex;
+            while(c2Rand === c1Rand) { c2Rand = paletaColores[Math.floor(Math.random() * paletaColores.length)].hex; }
+
+            const pantsRand = paletaColores[Math.floor(Math.random() * paletaColores.length)].hex;
+            const patronRand = patronesDisponibles[Math.floor(Math.random() * patronesDisponibles.length)];
+
+            document.getElementById('input-team-name').value = nombreRand;
+            document.getElementById('select-color1').value = c1Rand;
+            document.getElementById('select-color2').value = c2Rand;
+            document.getElementById('select-color-pants').value = pantsRand;
+            
+            actualizarColoresDesdeSelect();
+            seleccionarPatron(patronRand);
+        }
+
+        function traducirUI() {
+            const d = diccionario[idioma];
+            
+            if (modoRival && !modoVerResultado) {
+                document.getElementById('lbl-config-equipo').innerText = d.aceptarDesafio;
+            } else {
+                document.getElementById('lbl-config-equipo').innerText = d.configEquipo;
+            }
+
+            document.getElementById('lbl-nombre-equipo').innerText = d.nombreEquipo;
+            document.getElementById('btn-comenzar').innerText = d.comenzar;
+            document.getElementById('lbl-estrella').innerText = d.estrella;
+            document.getElementById('lbl-anyadir').innerText = d.anyadir;
+            document.getElementById('lbl-listo').innerText = d.listo;
+            document.getElementById('lbl-copiar-inst').innerText = d.copiarInst;
+            document.getElementById('btn-copiar').innerText = d.copiar;
+            document.getElementById('lbl-resumen').innerText = d.resumen;
+            document.getElementById('btn-nuevo').innerText = d.nuevo;
+            document.getElementById('lbl-instruccion-campo').innerText = d.instruccionCampo;
+            
+            document.getElementById('lbl-color1').innerText = d.lblColor1;
+            document.getElementById('lbl-color2').innerText = d.lblColor2;
+            document.getElementById('lbl-color-pants').innerText = d.lblColorPants;
+            document.getElementById('lbl-patron').innerText = d.lblPatron;
+            document.getElementById('lbl-retorno-inst').innerText = d.retornoInst;
+            document.getElementById('btn-copiar-retorno').innerText = d.copiarRetorno;
+            
+            document.getElementById('btn-idioma').innerText = idioma === 'es' ? "LANG: ES" : "LANG: EN";
+
+            construirSelectoresColores();
+            actualizarColoresDesdeSelect();
+            actualizarBotonAccion();
+            if (document.getElementById('screen-tactics').classList.contains('active')) {
+                dibujarCampo();
+            }
+        }
+
+        function toggleIdioma() {
+            idioma = idioma === 'es' ? 'en' : 'es';
+            localStorage.setItem('pixel_tactical_lang', idioma);
+            traducirUI();
+            
+            // Re-renderizar lista de goles si estamos en pantalla de resultados
+            if (document.getElementById('screen-result').classList.contains('active') && window.ultimoPartidoProcesado) {
+                resolverYMostrarMarcador(window.ultimoPartidoProcesado);
+            }
+        }
+
+        function obtenerEstiloCamiseta(c1, c2, patron) {
+            if (patron === 'rayas') {
+                return `repeating-linear-gradient(90deg, ${c1}, ${c1} 6px, ${c2} 6px, ${c2} 12px)`;
+            } else if (patron === 'mitad') {
+                return `linear-gradient(90deg, ${c1} 50%, ${c2} 50%)`;
+            } else if (patron === 'diagonal') {
+                return `linear-gradient(135deg, ${c1} 50%, ${c2} 50%)`;
+            }
+            return c1;
+        }
+
+        window.onload = async () => {
+            inicializarIdioma();
+            construirSelectoresColores();
+            aplicarCombinacionAleatoria();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('match')) {
+                partidoId = urlParams.get('match');
+                if (urlParams.has('view')) {
+                    modoVerResultado = true;
+                    traducirUI();
+                    await cargarYMostrarResultadoFinal();
+                } else {
+                    modoRival = true;
+                    traducirUI();
+                    aplicarCombinacionAleatoria();
+                    document.getElementById('input-team-name').value = "Rival FC";
+                }
+            } else {
+                traducirUI();
+            }
+        };
+
+        function guardarPerfil() {
+            perfil.nombre = document.getElementById('input-team-name').value;
+            actualizarColoresDesdeSelect();
+            document.getElementById('screen-setup').classList.remove('active');
+            document.getElementById('screen-tactics').classList.add('active');
+            dibujarCampo();
+        }
+
+        function obtenerNombreTactica(f, lang = idioma) {
+            const d = diccionario[lang];
+            if (f.def >= 5) return d.autobus;
+            if (f.med >= 4) return d.posesion;
+            return d.heavyMetal;
+        }
+
+        function calcularTotalJugadores(f) {
+            return f.def + f.med + f.del;
+        }
+
+        function calcularCambiosTotalesDelPartido() {
+            let cambiosTotales = 0;
+            for (let s = 2; s <= 6; s++) {
+                if (!alineacionesPorSlot[s]) break;
+                let anterior = alineacionesPorSlot[s - 1];
+                let actual = alineacionesPorSlot[s];
+                
+                let diff = Math.abs(actual.def - anterior.def) + 
+                           Math.abs(actual.med - anterior.med) + 
+                           Math.abs(actual.del - anterior.del);
+                
+                cambiosTotales += (diff / 2);
+            }
+            return cambiosTotales;
+        }
+
+        function dibujarCampo() {
+            const f = alineacionesPorSlot[slotActual];
+            const totalJ = calcularTotalJugadores(f);
+            const cambiosGlobales = calcularCambiosTotalesDelPartido();
+
+            const panelC = document.getElementById('panel-creacion');
+            const btns = panelC.getElementsByTagName('button');
+            const contadorEl = document.getElementById('lbl-info-cambios-contador');
+
+            if (slotActual > 1) {
+                contadorEl.style.display = 'block';
+                contadorEl.innerText = `${diccionario[idioma].cambiosUsados} ${cambiosGlobales} / 3`;
+            } else {
+                contadorEl.style.display = 'none';
+            }
+
+            for(let b of btns) {
+                b.disabled = (totalJ >= 10 || (slotActual > 1 && cambiosGlobales >= 3));
+            }
+
+            const crearFilaInteractiva = (containerId, cantidad, tipoPos) => {
+                const contenedor = document.getElementById(containerId);
+                contenedor.innerHTML = '';
+                for(let i=0; i<cantidad; i++){
+                    let div = document.createElement('div');
+                    div.className = 'player-pixel';
+                    
+                    let jersey = document.createElement('div');
+                    jersey.className = 'jersey-zone';
+                    jersey.style.background = obtenerEstiloCamiseta(perfil.color1, perfil.color2, perfil.patron);
+
+                    let shorts = document.createElement('div');
+                    shorts.className = 'shorts-zone';
+                    shorts.style.background = perfil.colorPants;
+
+                    div.appendChild(jersey);
+                    div.appendChild(shorts);
+                    
+                    div.onclick = () => removerJugadorDesdeCampo(tipoPos);
+                    contenedor.appendChild(div);
+                }
+            };
+
+            crearFilaInteractiva('row-def', f.def, 'def');
+            crearFilaInteractiva('row-med', f.med, 'med');
+            crearFilaInteractiva('row-del', f.del, 'del');
+        }
+
+        function anyadirJugador(pos) {
+            const f = alineacionesPorSlot[slotActual];
+            if (calcularTotalJugadores(f) >= 10) return;
+
+            if (slotActual > 1) {
+                f[pos]++;
+                if (calcularCambiosTotalesDelPartido() > 3) {
+                    f[pos]--; 
+                    alert(diccionario[idioma].errorCambios);
+                    return;
+                }
+            } else {
+                f[pos]++;
+            }
+            dibujarCampo();
+        }
+
+        function removerJugadorDesdeCampo(pos) {
+            const f = alineacionesPorSlot[slotActual];
+            if (f[pos] <= 1) {
+                alert(diccionario[idioma].errorMin);
+                return;
+            }
+
+            if (slotActual > 1) {
+                f[pos]--;
+                if (calcularCambiosTotalesDelPartido() > 3) {
+                    f[pos]++; 
+                    alert(diccionario[idioma].errorCambios);
+                    return;
+                }
+            } else {
+                f[pos]--;
+            }
+            dibujarCampo();
+        }
+
+        function toggleEstrella() {
+            const checked = document.getElementById('chk-star').checked;
+            const tabActiva = document.getElementById(`tab-${slotActual}`);
+            
+            if (checked) {
+                if (estrellaMarcada && estrellaMarcada !== slotActual) {
+                    const viejaTab = document.getElementById(`tab-${estrellaMarcada}`);
+                    if(viejaTab) viejaTab.innerText = estrellaMarcada;
+                }
+                estrellaMarcada = slotActual;
+                tabActiva.innerText = slotActual + " ⭐";
+            } else {
+                if (estrellaMarcada === slotActual) {
+                    estrellaMarcada = null;
+                }
+                tabActiva.innerText = slotActual;
+            }
+        }
+
+        function navegarASlot(num) {
+            const fOrigen = alineacionesPorSlot[slotActual];
+            if (slotActual === 1 && (fOrigen.def < 1 || fOrigen.med < 1 || fOrigen.del < 1)) {
+                return; 
+            }
+
+            if (num < slotActual) {
+                for (let s = num + 1; s <= 6; s++) {
+                    alineacionesPorSlot[s] = null;
+                    if (estrellaMarcada === s) {
+                        estrellaMarcada = null;
+                        document.getElementById(`tab-${s}`).innerText = s;
+                    }
+                }
+            }
+
+            document.getElementById(`tab-${slotActual}`).classList.remove('active');
+            slotActual = num;
+            document.getElementById(`tab-${slotActual}`).classList.add('active');
+
+            if (!alineacionesPorSlot[slotActual]) {
+                alineacionesPorSlot[slotActual] = JSON.parse(JSON.stringify(alineacionesPorSlot[slotActual - 1]));
+            }
+
+            document.getElementById('chk-star').checked = (estrellaMarcada === slotActual);
+            actualizarBotonAccion();
+            dibujarCampo();
+        }
+
+        function actualizarBotonAccion() {
+            const btn = document.getElementById('btn-accion-slot');
+            const d = diccionario[idioma];
+            if (slotActual < 6) {
+                btn.innerText = d.sigSlot;
+            } else {
+                btn.innerText = modoRival ? d.envReto : d.envDesafio;
+            }
+        }
+
+        async function avanzarSlot() {
+            const fActual = alineacionesPorSlot[slotActual];
+            if (fActual.def < 1 || fActual.med < 1 || fActual.del < 1) {
+                alert(diccionario[idioma].errorMin);
+                return;
+            }
+
+            if (slotActual < 6) {
+                navegarASlot(slotActual + 1);
+            } else {
+                // Siempre guardamos las tácticas en base al idioma de origen español para procesar reglas fijas en BD
+                let estrategiasFinales = [];
+                for(let s=1; s<=6; s++) {
+                    estrategiasFinales.push(obtenerNombreTactica(alineacionesPorSlot[s], 'es'));
+                }
+                await enviarEstrategiasABackend(estrategiasFinales);
+            }
+        }
+
+        async function enviarEstrategiasABackend(estrategiasArray) {
+            if (!supabaseClient) return;
+
+            if (!modoRival) {
+                const { data, error } = await supabaseClient.from('partidos').insert([{
+                    nombre_retador: perfil.nombre,
+                    color_retador: JSON.stringify({c1: perfil.color1, c2: perfil.color2, cp: perfil.colorPants, p: perfil.patron}),
+                    estrategias_retador: estrategiasArray,
+                    estrella_retador: estrellaMarcada
+                }]).select();
+
+                if (error) { console.error(error); return; }
+
+                const link = `${window.location.origin}${window.location.pathname}?match=${data[0].id}`;
+                document.getElementById('share-link').value = link;
+                
+                document.getElementById('screen-tactics').classList.remove('active');
+                document.getElementById('screen-share').classList.add('active');
+            } else {
+                const { data, error } = await supabaseClient.from('partidos').update({
+                    nombre_rival: perfil.nombre,
+                    color_rival: JSON.stringify({c1: perfil.color1, c2: perfil.color2, cp: perfil.colorPants, p: perfil.patron}),
+                    estrategias_rival: estrategiasArray,
+                    estrella_rival: estrellaMarcada,
+                    completado: true
+                }).eq('id', partidoId).select();
+
+                if (error) { console.error(error); return; }
+
+                document.getElementById('screen-tactics').classList.remove('active');
+                document.getElementById('screen-result').classList.add('active');
+                
+                const returnLink = `${window.location.origin}${window.location.pathname}?match=${partidoId}&view=true`;
+                document.getElementById('share-back-link').value = returnLink;
+                document.getElementById('panel-retorno-rival').style.display = 'block';
+
+                resolverYMostrarMarcador(data[0]);
+            }
+        }
+
+        async function cargarYMostrarResultadoFinal() {
+            if (!supabaseClient) return;
+            const { data, error } = await supabaseClient.from('partidos').select('*').eq('id', partidoId).single();
+            if (error || !data) return;
+
+            document.getElementById('screen-setup').classList.remove('active');
+            document.getElementById('screen-result').classList.add('active');
+            document.getElementById('panel-retorno-rival').style.display = 'none';
+            
+            resolverYMostrarMarcador(data);
+        }
+
+        function resolverYMostrarMarcador(partido) {
+            window.ultimoPartidoProcesado = partido; // Guardamos caché para cambios de idioma en caliente
+            let gRetador = 0;
+            let gRival = 0;
+            let huboGoles = false;
+            const lista = document.getElementById('resultado-lista');
+            lista.innerHTML = '';
+
+            const d = diccionario[idioma];
+
+            // Las estrategias se comparan en base a la constante mapeada en español
+            const reglasGanadoras = {};
+            reglasGanadoras[diccionario['es'].autobus] = diccionario['es'].posesion;
+            reglasGanadoras[diccionario['es'].posesion] = diccionario['es'].heavyMetal;
+            reglasGanadoras[diccionario['es'].heavyMetal] = diccionario['es'].autobus;
+
+            const rangoMinutosPorSlot = [
+                { min: 1, max: 15 },   
+                { min: 16, max: 30 },  
+                { min: 31, max: 45 },  
+                { min: 46, max: 60 },  
+                { min: 61, max: 75 },  
+                { min: 76, max: 90 }   
+            ];
+
+            for (let i = 0; i < 6; i++) {
+                let tRetador = partido.estrategias_retador[i];
+                let tRival = partido.estrategias_rival[i];
+                
+                if (tRetador === tRival) {
+                    continue; 
+                }
+
+                huboGoles = true;
+                let limites = rangoMinutosPorSlot[i];
+
+                if (reglasGanadoras[tRetador] === tRival) {
+                    let esEstrella = (partido.estrella_retador === (i + 1));
+                    
+                    if (esEstrella) {
+                        gRetador += 2;
+                        let m1 = Math.floor(Math.random() * (limites.max - 4 - limites.min + 1)) + limites.min;
+                        let m2 = m1 + Math.floor(Math.random() * 3) + 1;
+                        
+                        lista.innerHTML += `<li style="color:#38b764; border-left: 5px solid #38b764;">${d.txtGol.replace('{m}', m1).replace('{equipo}', partido.nombre_retador)}</li>`;
+                        lista.innerHTML += `<li style="color:#38b764; border-left: 5px solid #38b764;">${d.txtGol.replace('{m}', m2).replace('{equipo}', partido.nombre_retador)}</li>`;
+                    } else {
+                        gRetador += 1;
+                        let m = Math.floor(Math.random() * (limites.max - limites.min + 1)) + limites.min;
+                        lista.innerHTML += `<li style="color:#38b764; border-left: 5px solid #38b764;">${d.txtGol.replace('{m}', m).replace('{equipo}', partido.nombre_retador)}</li>`;
+                    }
+                } else {
+                    let esEstrella = (partido.estrella_rival === (i + 1));
+
+                    if (esEstrella) {
+                        gRival += 2;
+                        let m1 = Math.floor(Math.random() * (limites.max - 4 - limites.min + 1)) + limites.min;
+                        let m2 = m1 + Math.floor(Math.random() * 3) + 1;
+
+                        lista.innerHTML += `<li style="color:#ef7d57; border-left: 5px solid #ef7d57;">${d.txtGol.replace('{m}', m1).replace('{equipo}', partido.nombre_rival)}</li>`;
+                        lista.innerHTML += `<li style="color:#ef7d57; border-left: 5px solid #ef7d57;">${d.txtGol.replace('{m}', m2).replace('{equipo}', partido.nombre_rival)}</li>`;
+                    } else {
+                        gRival += 1;
+                        let m = Math.floor(Math.random() * (limites.max - limites.min + 1)) + limites.min;
+                        lista.innerHTML += `<li style="color:#ef7d57; border-left: 5px solid #ef7d57;">${d.txtGol.replace('{m}', m).replace('{equipo}', partido.nombre_rival)}</li>`;
+                    }
+                }
+            }
+
+            if (!huboGoles) {
+                lista.innerHTML = `<li style="background: rgba(255,255,255,0.05); text-align:center; font-size: 14px; padding: 20px; color: #f4b41b;">⚽ ${d.txtEmpateGlobal} ⚽</li>`;
+            }
+
+            document.getElementById('marcador-final').innerText = `${gRetador} - ${gRival}`;
+        }
+
+        function copiarEnlace() {
+            const input = document.getElementById('share-link');
+            input.select();
+            document.execCommand('copy');
+            document.getElementById('btn-copiar').innerText = diccionario[idioma].copiado;
+        }
+
+        function copiarEnlaceRetorno() {
+            const input = document.getElementById('share-back-link');
+            input.select();
+            document.execCommand('copy');
+            document.getElementById('btn-copiar-retorno').innerText = diccionario[idioma].copiado;
+        }
+
+        function irAInicio() {
+            window.location.href = window.location.origin + window.location.pathname;
+        }
+    </script>
+</body>
+</html>
