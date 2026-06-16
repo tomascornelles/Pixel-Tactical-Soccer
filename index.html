@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Tactical Soccer v5.4</title>
+    <title>Pixel Soccer</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Pixel Soccer">
+    
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlBpeGVsIFNvY2NlciIsCiAgInNob3J0X25hbWUiOiAiUGl4ZWwgU29jY2VyIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMxODE0MjUiLAogICJ0aGVtZV9jb2xvciI6IiMxODE0MjUiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJkeUI0YldndmN6MGlNUzR3SWlCbWFXeGxiV0Z0SWpwZFlXUnphRzVwYm1jOUlqZ29KM04wY214bElpQmpiM0p2Y210bFpDOTRleUkrUEhOMmR5QjRieUJuYldGemFHOXdaV1Z6SWpwaFkyVjVkR1VvSkhSeWFXNW5jeWkrUEhOMmR5QjRieUJwZEM5NElpQndiR0Y1WlhKcGNHVjRkVzUwSWpwd2FYSmxiaWkrUEhOMmR5QjRieUJuYldGemFHOXdaV1Z6SWpwaFkyVjVkR1VvSlNVelFpSTZJQ0lrSUNKOWZRbz0iLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     
@@ -36,8 +43,8 @@
         }
 
         .main-wrapper {
-            flex: 1;
             width: 100%;
+            max-width: 500px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -50,7 +57,6 @@
             box-shadow: 0 6px 0 var(--pixel-black);
             margin-bottom: 15px;
             width: 100%;
-            max-width: 500px;
         }
 
         .pixel-btn {
@@ -82,7 +88,6 @@
             display: flex;
             justify-content: space-between;
             width: 100%;
-            max-width: 500px;
             margin-bottom: 10px;
         }
 
@@ -111,7 +116,6 @@
 
         #soccer-field {
             width: 100%;
-            max-width: 500px;
             height: 340px;
             background: repeating-linear-gradient(to bottom, var(--field-green), var(--field-green) 30px, var(--field-dark) 30px, var(--field-dark) 60px);
             border: 6px solid var(--pixel-white);
@@ -143,7 +147,6 @@
             z-index: 2;
         }
 
-        /* --- JUGADOR PIXEL SIN DETALLE DE CUELLO --- */
         .player-pixel {
             width: 34px;
             height: 36px;
@@ -167,7 +170,6 @@
             border-top: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* --- CONTENEDOR PREVISUALIZACIÓN CONFIG --- */
         .preview-wrapper {
             display: flex;
             justify-content: center;
@@ -178,7 +180,6 @@
             margin-bottom: 15px;
         }
 
-        /* --- SELECTORES COLOR --- */
         .color-picker-select {
             width: 100%;
             height: 38px;
@@ -217,7 +218,7 @@
             border: 1px solid #fff;
         }
 
-        .screen { display: none; width: 100%; max-width: 500px; }
+        .screen { display: none; width: 100%; }
         .screen.active { display: block; }
 
         input[type="text"], select {
@@ -241,17 +242,44 @@
             border-bottom: 1px dashed #555;
         }
 
-        footer {
-            margin-top: 30px;
+        /* --- CONTENEDOR IDIOMA Y SEPARADOR --- */
+        .language-section {
             width: 100%;
-            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 5px;
+            margin-bottom: 25px;
+        }
+
+        .pixel-divider {
+            width: 100%;
+            height: 4px;
+            background: repeating-linear-gradient(90deg, #fff, #fff 4px, transparent 4px, transparent 8px);
+            margin-bottom: 15px;
+        }
+
+        /* --- ACCESO DIRECTO APP / NOTIFICACIONES INSTALACIÓN --- */
+        #pwa-install-banner {
+            display: none;
+            background: #1d2136;
+            border: 3px dashed #f4b41b;
+            padding: 10px;
             text-align: center;
+            margin-bottom: 15px;
+            width: 100%;
         }
     </style>
 </head>
 <body>
 
     <div class="main-wrapper">
+        
+        <div id="pwa-install-banner">
+            <span id="lbl-pwa-texto" style="font-size: 9px; display: block; margin-bottom: 8px;">¡JUEGA CÓMODAMENTE INSTALANDO LA APP!</span>
+            <button class="pixel-btn" id="btn-pwa-install" style="background: #f4b41b; margin: 0;">INSTALAR PIXEL SOCCER</button>
+        </div>
+
         <div id="screen-setup" class="screen active pixel-box">
             <h2 id="lbl-config-equipo">CONFIGURAR EQUIPO</h2>
             
@@ -365,11 +393,13 @@
 
             <button class="pixel-btn" style="width:100%" onclick="irAInicio()" id="btn-nuevo">CREAR NUEVO DESAFÍO</button>
         </div>
-    </div>
 
-    <footer>
-        <button class="pixel-btn" onclick="toggleIdioma()" id="btn-idioma">ES/EN</button>
-    </footer>
+        <div class="language-section">
+            <div class="pixel-divider"></div>
+            <button class="pixel-btn" onclick="toggleIdioma()" id="btn-idioma">LANG: ES</button>
+        </div>
+
+    </div>
 
     <script>
         // --- CONFIGURACIÓN SUPABASE ---
@@ -377,7 +407,6 @@
         const SUPABASE_KEY = "sb_publishable_VZpQXtRu-KCezbQUtzbl4Q_B91tm8wd"; 
         const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-        // Paleta de colores con el naranja exacto: rgb(255, 116, 0)
         const paletaColores = [
             { hex: "#b13e53" }, { hex: "#1a8cff" }, { hex: "#38b764" }, { hex: "#f4b41b" },
             { hex: "#ffffff" }, { hex: "#000000" }, { hex: "#743fb2" }, { hex: "rgb(255, 116, 0)" }
@@ -418,7 +447,9 @@
                 lblColorPants: "Color del Pantalón:",
                 lblPatron: "Patrón de Camiseta:",
                 retornoInst: "¡Envía el resultado de vuelta al retador para que vea el desenlace!",
-                copiarRetorno: "COPIAR ENLACE RESULTADO"
+                copiarRetorno: "COPIAR ENLACE RESULTADO",
+                pwaTexto: "¡JUEGA CÓMODAMENTE INSTALANDO LA APP!",
+                pwaBoton: "INSTALAR PIXEL SOCCER"
             },
             en: {
                 configEquipo: "TEAM CONFIG", 
@@ -450,11 +481,12 @@
                 lblColorPants: "Shorts Color:",
                 lblPatron: "Jersey Pattern:",
                 retornoInst: "Send the result back to the challenger to let them see the outcome!",
-                copiarRetorno: "COPY RESULT LINK"
+                copiarRetorno: "COPY RESULT LINK",
+                pwaTexto: "PLAY COMFORTABLY BY INSTALLING THE APP!",
+                pwaBoton: "INSTALL PIXEL SOCCER"
             }
         };
 
-        // Detección automática del idioma del sistema o carga desde localStorage
         let idioma = 'es';
         function inicializarIdioma() {
             const guardado = localStorage.getItem('pixel_tactical_lang');
@@ -469,6 +501,29 @@
                 }
             }
         }
+
+        // --- SISTEMA WEB APP INSTALABLE (PWA) ---
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('pwa-install-banner').style.display = 'block';
+        });
+
+        document.getElementById('btn-pwa-install').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('pwa-install-banner').style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('pwa-install-banner').style.display = 'none';
+        });
 
         let modoRival = false; 
         let modoVerResultado = false;
@@ -577,6 +632,8 @@
             document.getElementById('lbl-patron').innerText = d.lblPatron;
             document.getElementById('lbl-retorno-inst').innerText = d.retornoInst;
             document.getElementById('btn-copiar-retorno').innerText = d.copiarRetorno;
+            document.getElementById('lbl-pwa-texto').innerText = d.pwaTexto;
+            document.getElementById('btn-pwa-install').innerText = d.pwaBoton;
             
             document.getElementById('btn-idioma').innerText = idioma === 'es' ? "LANG: ES" : "LANG: EN";
 
@@ -593,7 +650,6 @@
             localStorage.setItem('pixel_tactical_lang', idioma);
             traducirUI();
             
-            // Re-renderizar lista de goles si estamos en pantalla de resultados
             if (document.getElementById('screen-result').classList.contains('active') && window.ultimoPartidoProcesado) {
                 resolverYMostrarMarcador(window.ultimoPartidoProcesado);
             }
@@ -821,7 +877,6 @@
             if (slotActual < 6) {
                 navegarASlot(slotActual + 1);
             } else {
-                // Siempre guardamos las tácticas en base al idioma de origen español para procesar reglas fijas en BD
                 let estrategiasFinales = [];
                 for(let s=1; s<=6; s++) {
                     estrategiasFinales.push(obtenerNombreTactica(alineacionesPorSlot[s], 'es'));
@@ -883,7 +938,7 @@
         }
 
         function resolverYMostrarMarcador(partido) {
-            window.ultimoPartidoProcesado = partido; // Guardamos caché para cambios de idioma en caliente
+            window.ultimoPartidoProcesado = partido; 
             let gRetador = 0;
             let gRival = 0;
             let huboGoles = false;
@@ -892,7 +947,6 @@
 
             const d = diccionario[idioma];
 
-            // Las estrategias se comparan en base a la constante mapeada en español
             const reglasGanadoras = {};
             reglasGanadoras[diccionario['es'].autobus] = diccionario['es'].posesion;
             reglasGanadoras[diccionario['es'].posesion] = diccionario['es'].heavyMetal;
