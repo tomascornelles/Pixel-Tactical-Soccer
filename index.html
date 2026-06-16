@@ -489,7 +489,7 @@
                     <div class="pattern-preview" style="background: linear-gradient(90deg, transparent 48%, #ffffff 48%, #ffffff 52%, transparent 52%);"></div>
                 </div>
                 <div class="pattern-opt" id="p-damero" onclick="seleccionarPatron('damero')">
-                    <div class="pattern-preview" style="background: conic-gradient(#ffffff 0deg 90deg, #9b9b9b 90deg 180deg) 0 0 / 10px 10px;"></div>
+                    <div class="pattern-preview" style="background: repeating-conic-gradient(#ffffff 0deg 90deg, #9b9b9b 90deg 180deg) 0 0 / 10px 10px;"></div>
                 </div>
             </div>
 
@@ -894,11 +894,11 @@
             } else if (patron === 'h-lineas') {
                 return `repeating-linear-gradient(0deg, ${c1}, ${c1} 6px, ${c2} 6px, ${c2} 12px)`;
             } else if (patron === 'linea-diagonal') {
-                return `linear-gradient(135deg, transparent 48%, ${c1} 48%, ${c1} 52%, transparent 52%), linear-gradient(to right, ${c2}, ${c2})`;
+                return `linear-gradient(135deg, transparent 48%, ${c2} 48%, ${c2} 52%, transparent 52%), linear-gradient(to right, ${c1}, ${c1})`;
             } else if (patron === 'v-linea') {
-                return `linear-gradient(90deg, transparent 48%, ${c1} 48%, ${c1} 52%, transparent 52%), linear-gradient(to bottom, ${c2}, ${c2})`;
+                return `linear-gradient(90deg, transparent 48%, ${c2} 48%, ${c2} 52%, transparent 52%), linear-gradient(to bottom, ${c1}, ${c1})`;
             } else if (patron === 'damero') {
-                return `repeating-conic-gradient(#808080 0 25%, #0000 0 50%) 50% / 20px 20px`;
+                return `repeating-conic-gradient(${c1} 0 25%, ${c2} 0 50%) 50% / 10px 10px`;
             }
             return c1;
         }
