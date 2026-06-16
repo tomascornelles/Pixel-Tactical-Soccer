@@ -27,8 +27,8 @@
             --field-dark: #257142;
             --pixel-white: #ffffff;
             --pixel-black: #000000;
-            --font-text: 'Bitcount Single', monospace;       /* Para todos los textos base */
-            --font-title: 'Bitcount Grid Double', sans-serif; /* Para títulos y marcadores */
+            --font-text: 'Bitcount Single', monospace;
+            --font-title: 'Bitcount Grid Double', sans-serif;
         }
 
         * {
@@ -113,7 +113,6 @@
             box-shadow: 0 4px 0 var(--pixel-black) !important;
         }
 
-        /* DISEÑO REAJUSTADO: Previsualización al lado de los selectores */
         .setup-split-container {
             display: flex;
             gap: 15px;
@@ -147,7 +146,6 @@
             margin-bottom: 15px;
         }
 
-        /* NUEVO SLOT TAB: Estrella al lado del número y de mayor tamaño */
         .slot-tab {
             font-family: var(--font-title) !important;
             font-weight: 700;
@@ -183,15 +181,15 @@
         }
 
         .tab-star {
-            font-size: 19px; /* Estrella más grande */
+            font-size: 19px;
             color: #7d87a4;
             cursor: pointer;
             transition: transform 0.1s ease;
         }
 
         .slot-tab.active .tab-star {
-		color: black;
-		font-size: 1.3em;
+            color: black;
+            font-size: 1.3em;
         }
 
         #soccer-field {
@@ -436,7 +434,7 @@
             <label id="lbl-nombre-equipo">Nombre del Equipo:</label>
             <div class="input-inline-container" style="margin-bottom: 15px;">
                 <input type="text" id="input-team-name" class="pixel-input-matching" value="Pixel FC" oninput="guardarEnLocalStorageDinamico()">
-                <button class="pixel-btn" id="btn-random-kit" style="margin:0; height: 38px; width: 44px; padding: 0; background: #41a6f6; color: white; font-size: 18px; display: flex; align-items: center; justify-content: center;" onclick="aplicarCombinacionAleatoria()">🔄</button>
+                <button class="pixel-btn" id="btn-random-kit" style="margin:0; height: 38px; width: 44px; padding: 0; background: #41a6f6; color: white; font-size: 18px; display: flex; align-items: center; justify-content: center;" onclick="aplicarCombinacionAleatoria()">🎲</button>
             </div>
 
             <div class="setup-split-container">
@@ -570,7 +568,6 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN SUPABASE ---
         const SUPABASE_URL = "https://acftekfljjbsfyptlwuu.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_VZpQXtRu-KCezbQUtzbl4Q_B91tm8wd"; 
         const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
@@ -583,7 +580,6 @@
         const nombresAleatorios = ["Chipi Chipi FC", "Retro United", "8-Bit Athletic", "Pixel Stars", "Insert Coin FC", "Arcade City"];
         const patronesDisponibles = ["solido", "rayas", "mitad", "diagonal"];
 
-        // --- MULTIIDIOMA UNIFICADO ---
         const diccionario = {
             es: {
                 configEquipo: "CONFIGURAR EQUIPO", 
@@ -619,10 +615,10 @@
                 btnAyuda: "¿CÓMO JUGAR? ❓",
                 tituloAyuda: "INSTRUCCIONES DE USO",
                 cuerpoAyuda: `
-                    <p><strong>1. Llenar la estrategia inicial:</strong> Usa los botones <strong>DEF +1</strong>, <strong>MED +1</strong> y <strong>DEL +1</strong> para añadir jugadores al campo. Recuerda que es obligatorio tener al menos 1 jugador por línea. Si quieres quitar a alguien, haz <strong>click directamente sobre el jugador</strong> en el campo.</p>
-                    <p><strong>2. Moverse por los slots:</strong> El partido consta de 6 bloques o slots de tiempo. <strong>No podrás cambiar de slot ni pulsar "SIGUIENTE" o "ATRÁS" hasta que sumes exactamente 10 jugadores en el campo de juego.</strong></p>
-                    <p><strong>3. Limitación de cambios:</strong> Al avanzar del Slot 1 al Slot 2, la alineación se clona de forma continua. Cuentas con un límite estricto de <strong>3 cambios acumulados</strong> desde el bloque 2. Si pulsas <strong>"ATRÁS"</strong>, la estrategia se reseteará y borrará hacia adelante desde ese bloque para permitirte corregir.</p>
-                    <p><strong>4. Enviar el reto:</strong> Al completar los 10 jugadores del Slot 6, el botón cambiará automáticamente. Si eres el creador, generará un <strong>enlace para enviar a tu rival</strong>. Si eres el rival, procesará el partido inmediatamente y te dará un enlace para devolverle el resultado final al retador.</p>
+                    <p><strong>1. Llenar la estrategia inicial:</strong> Usa los botones <strong>DEF +1</strong>, <strong>MED +1</strong> y <strong>DEL +1</strong> para añadir jugadores al campo. Recomendación: crea una alineación 4-3-3 o 4-4-2 (por ejemplo, 4 defenses, 3 mediocampistas y 3 delanteros).</p>
+                    <p><strong>2. Moverse por los slots:</strong> El partido consta de 6 bloques o slots de tiempo. <strong>No podrás cambiar de slot ni pulsar "SIGUIENTE" o "ATRÁS" hasta que sumes exactamente 10 jugadores (incluyendo el portero)</strong>. El portero está predefinido.</p>
+                    <p><strong>3. Limitación de cambios:</strong> Al avanzar del Slot 1 al Slot 2, la alineación se clona de forma continua. Cuentas con un límite estricto de <strong>3 cambios acumulados</strong> durante todo el partido. Un cambio se cuenta cuando aumentas o disminuyes el número de jugadores en cualquier línea.</p>
+                    <p><strong>4. Enviar el reto:</strong> Al completar los 10 jugadores del Slot 6, el botón cambiará automáticamente. Si eres el creador, generará un <strong>enlace para enviar a tu rival</strong>. Si eres el rival, mostraremos el resultado final del partido simulado.</p>
                 `
             },
             en: {
@@ -659,10 +655,10 @@
                 btnAyuda: "HOW TO PLAY? ❓",
                 tituloAyuda: "GAME INSTRUCTIONS",
                 cuerpoAyuda: `
-                    <p><strong>1. Setting the Initial Strategy:</strong> Use the <strong>DEF +1</strong>, <strong>MID +1</strong>, and <strong>FWD +1</strong> buttons to add players to the field. You must have at least 1 player per line. To remove a player, <strong>click directly on that player</strong> inside the tactical board.</p>
-                    <p><strong>2. Navigating the Slots:</strong> The match is divided into 6 strategic time blocks. <strong>You cannot switch slots, nor press "NEXT" or "BACK" until you place exactly 10 players on the field.</strong></p>
-                    <p><strong>3. Substitution Limits:</strong> Advancing from Slot 1 to Slot 2 continuously clones your lineup. From Slot 2 onwards, you have a strict limit of <strong>3 cumulative changes</strong>. If you press <strong>"BACK"</strong>, your setup will reset and wipe forward from that block.</p>
-                    <p><strong>4. Sending the Challenge:</strong> Once Slot 6 has exactly 10 players, the button actions change automatically. If you are the creator, it generates a <strong>shareable link for your rival</strong>. If you are the rival, it calculates the match results instantly.</p>
+                    <p><strong>1. Setting the Initial Strategy:</strong> Use the <strong>DEF +1</strong>, <strong>MID +1</strong>, and <strong>FWD +1</strong> buttons to add players to the field. Recommendation: create a 4-3-3 or 4-4-2 lineup (for example, 4 defenders, 3 midfielders, and 3 forwards).</p>
+                    <p><strong>2. Navigating the Slots:</strong> The match is divided into 6 strategic time blocks. <strong>You cannot switch slots, nor press "NEXT" or "BACK" until you place exactly 10 players (including the goalkeeper)</strong>. The goalkeeper is predefined.</p>
+                    <p><strong>3. Substitution Limits:</strong> Advancing from Slot 1 to Slot 2 continuously clones your lineup. From Slot 2 onwards, you have a strict limit of <strong>3 cumulative changes</strong> throughout the match. One change is counted each time you increase or decrease the number of players in any line.</p>
+                    <p><strong>4. Sending the Challenge:</strong> Once Slot 6 has exactly 10 players, the button actions change automatically. If you are the creator, it generates a <strong>shareable link to send to your rival</strong>. If you are the rival, we will display the final result of the simulated match.</p>
                 `
             }
         };
@@ -1003,231 +999,297 @@
 
         function anyadirJugador(pos) {
             const f = alineacionesPorSlot[slotActual];
-            if (calcularTotalJugadores(f) >= 10) return;
-
-            f[pos]++;
-            if (slotActual > 1 && calcularCambiosTotalesDelPartido() > 3) {
-                f[pos]--; 
+            const cambiosGlobales = calcularCambiosTotalesDelPartido();
+            
+            if (slotActual > 1 && cambiosGlobales >= 3) {
                 alert(diccionario[idioma].errorCambios);
                 return;
             }
-            dibujarCampo();
+            
+            if (calcularTotalJugadores(f) < 10) {
+                f[pos]++;
+                dibujarCampo();
+            }
         }
 
         function removerJugadorDesdeCampo(pos) {
             const f = alineacionesPorSlot[slotActual];
-            if (f[pos] <= 1) {
+            
+            if (f[pos] > 1) {
+                f[pos]--;
+                dibujarCampo();
+            } else {
                 alert(diccionario[idioma].errorMin);
-                return;
             }
-
-            f[pos]--;
-            if (slotActual > 1 && calcularCambiosTotalesDelPartido() > 3) {
-                f[pos]++; 
-                alert(diccionario[idioma].errorCambios);
-                return;
-            }
-            dibujarCampo();
         }
 
-        function intentarCambiarPestana(num) {
+        function intentarCambiarPestana(numeroTab) {
             const f = alineacionesPorSlot[slotActual];
-            if (f && calcularTotalJugadores(f) < 10) return; 
-            cambiarPestanaLineal(num);
-        }
-
-        function cambiarPestanaLineal(num) {
-            slotActual = num;
-            if (!alineacionesPorSlot[slotActual]) {
-                alineacionesPorSlot[slotActual] = JSON.parse(JSON.stringify(alineacionesPorSlot[slotActual - 1]));
+            
+            if (calcularTotalJugadores(f) < 10) {
+                return;
             }
-
-            actualizarBotonAccion();
+            
+            slotActual = numeroTab;
             dibujarCampo();
         }
 
         function retrocederSlot() {
             if (slotActual > 1) {
-                for (let s = slotActual; s <= 6; s++) {
-                    if (s > 1) alineacionesPorSlot[s] = null;
-                    if (estrellaMarcada === s) estrellaMarcada = null;
+                const fAnterior = alineacionesPorSlot[slotActual - 1];
+                
+                if (!fAnterior) {
+                    return;
                 }
-                cambiarPestanaLineal(slotActual - 1);
+                
+                slotActual--;
+                dibujarCampo();
+            }
+        }
+
+        function avanzarSlot() {
+            const f = alineacionesPorSlot[slotActual];
+            
+            if (calcularTotalJugadores(f) !== 10) {
+                alert(diccionario[idioma].errorMin);
+                return;
+            }
+            
+            if (slotActual < 6) {
+                if (!alineacionesPorSlot[slotActual + 1]) {
+                    const fActual = alineacionesPorSlot[slotActual];
+                    alineacionesPorSlot[slotActual + 1] = { def: fActual.def, med: fActual.med, del: fActual.del };
+                }
+                
+                slotActual++;
+                dibujarCampo();
+                
+                if (slotActual > 1) {
+                    document.getElementById('btn-atras-slot').style.display = 'block';
+                }
+                
+                if (slotActual === 6) {
+                    actualizarBotonAccion();
+                }
+            } else {
+                enviarDesafio();
             }
         }
 
         function actualizarBotonAccion() {
-            const btnAvanzar = document.getElementById('btn-accion-slot');
-            const btnAtras = document.getElementById('btn-atras-slot');
-            const d = diccionario[idioma];
-
-            btnAtras.style.display = slotActual > 1 ? 'block' : 'none';
-
-            if (slotActual < 6) {
-                btnAvanzar.innerText = d.sigSlot;
+            const boton = document.getElementById('btn-accion-slot');
+            
+            if (slotActual === 6 && calcularTotalJugadores(alineacionesPorSlot[6]) === 10) {
+                if (modoRival) {
+                    boton.innerText = diccionario[idioma].envReto;
+                    boton.style.background = '#38b764';
+                    boton.onclick = () => procesarRivalyMostrarResultado();
+                } else {
+                    boton.innerText = diccionario[idioma].envDesafio;
+                    boton.style.background = '#38b764';
+                    boton.onclick = () => enviarDesafio();
+                }
             } else {
-                btnAvanzar.innerText = modoRival ? d.envReto : d.envDesafio;
+                boton.innerText = diccionario[idioma].sigSlot;
+                boton.style.background = '#38b764';
+                boton.onclick = () => avanzarSlot();
             }
         }
 
-        async function avanzarSlot() {
-            const fActual = alineacionesPorSlot[slotActual];
-            if (fActual.def < 1 || fActual.med < 1 || fActual.del < 1) {
-                alert(diccionario[idioma].errorMin);
+        async function enviarDesafio() {
+            const urlBase = window.location.origin + window.location.pathname;
+            const nuevoId = 'match_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            const datosDesafio = {
+                id: nuevoId,
+                equipoCreador: {
+                    nombre: perfil.nombre,
+                    color1: perfil.color1,
+                    color2: perfil.color2,
+                    colorPants: perfil.colorPants,
+                    patron: perfil.patron
+                },
+                alineacionesCreador: JSON.parse(JSON.stringify(alineacionesPorSlot))
+            };
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('partidos').insert([datosDesafio]);
+                } catch(e) {
+                    console.log('Supabase insert fallido, continuando en cliente...');
+                }
+            }
+
+            const enlace = `${urlBase}?match=${nuevoId}`;
+            document.getElementById('share-link').value = enlace;
+            
+            document.getElementById('screen-tactics').classList.remove('active');
+            document.getElementById('screen-share').classList.add('active');
+        }
+
+        async function procesarRivalyMostrarResultado() {
+            const datosPartido = await cargarPartido(partidoId);
+            
+            if (!datosPartido) {
+                alert('Error al cargar el partido');
                 return;
             }
 
-            if (slotActual < 6) {
-                cambiarPestanaLineal(slotActual + 1);
-            } else {
-                let estrategiasFinales = [];
-                for(let s=1; s<=6; s++) {
-                    estrategiasFinales.push(obtenerNombreTactica(alineacionesPorSlot[s], 'es'));
-                }
-                await enviarEstrategiasABackend(estrategiasFinales);
-            }
+            const resultados = simularPartido(datosPartido.alineacionesCreador, alineacionesPorSlot);
+            window.ultimoPartidoProcesado = resultados;
+
+            const urlBase = window.location.origin + window.location.pathname;
+            const enlaceResultado = `${urlBase}?match=${partidoId}&view=true`;
+            document.getElementById('share-back-link').value = enlaceResultado;
+            document.getElementById('panel-retorno-rival').style.display = 'block';
+
+            document.getElementById('screen-tactics').classList.remove('active');
+            document.getElementById('screen-result').classList.add('active');
+
+            resolverYMostrarMarcador(resultados);
         }
 
-        async function enviarEstrategiasABackend(estrategiasArray) {
-            if (!supabaseClient) return;
-
-            if (!modoRival) {
-                const { data, error } = await supabaseClient.from('partidos').insert([{
-                    nombre_retador: perfil.nombre,
-                    color_retador: JSON.stringify({c1: perfil.color1, c2: perfil.color2, cp: perfil.colorPants, p: perfil.patron}),
-                    estrategias_retador: estrategiasArray,
-                    estrella_retador: estrellaMarcada
-                }]).select();
-
-                if (error) return;
-
-                document.getElementById('share-link').value = `${window.location.origin}${window.location.pathname}?match=${data[0].id}`;
-                document.getElementById('screen-tactics').classList.remove('active');
-                document.getElementById('screen-share').classList.add('active');
-            } else {
-                const { data, error } = await supabaseClient.from('partidos').update({
-                    nombre_rival: perfil.nombre,
-                    color_rival: JSON.stringify({c1: perfil.color1, c2: perfil.color2, cp: perfil.colorPants, p: perfil.patron}),
-                    estrategias_rival: estrategiasArray,
-                    estrella_rival: estrellaMarcada,
-                    completado: true
-                }).eq('id', partidoId).select();
-
-                if (error) return;
-
-                document.getElementById('screen-tactics').classList.remove('active');
-                document.getElementById('screen-result').classList.add('active');
-                
-                document.getElementById('share-back-link').value = `${window.location.origin}${window.location.pathname}?match=${partidoId}&view=true`;
-                document.getElementById('panel-retorno-rival').style.display = 'block';
-
-                resolverYMostrarMarcador(data[0]);
+        async function cargarPartido(id) {
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.from('partidos').select('*').eq('id', id).single();
+                    if (!error && data) return data;
+                } catch(e) {
+                    console.log('Error cargando desde Supabase');
+                }
             }
+            return null;
         }
 
         async function cargarYMostrarResultadoFinal() {
-            if (!supabaseClient) return;
-            const { data, error } = await supabaseClient.from('partidos').select('*').eq('id', partidoId).single();
-            if (error || !data) return;
+            const datosPartido = await cargarPartido(partidoId);
+            
+            if (!datosPartido) {
+                document.getElementById('screen-result').innerHTML = '<p>Partido no encontrado o expirado.</p>';
+                document.getElementById('screen-setup').classList.remove('active');
+                document.getElementById('screen-result').classList.add('active');
+                return;
+            }
+
+            const resultados = simularPartido(datosPartido.alineacionesCreador, datosPartido.alineacionesRival);
+            window.ultimoPartidoProcesado = resultados;
 
             document.getElementById('screen-setup').classList.remove('active');
             document.getElementById('screen-result').classList.add('active');
-            document.getElementById('panel-retorno-rival').style.display = 'none';
-            
-            resolverYMostrarMarcador(data);
+
+            resolverYMostrarMarcador(resultados);
         }
 
-        function generarHTMLMiniJugador(c1, c2, cp, p) {
-            return `
-                <div class="player-pixel mini">
-                    <div class="jersey-zone" style="background: ${obtenerEstiloCamiseta(c1, c2, p)};"></div>
-                    <div class="shorts-zone" style="background: ${cp};"></div>
-                </div>
-            `;
-        }
+        function simularPartido(alineacionesCreador, alineacionesRival) {
+            const eventos = [];
 
-        function resolverYMostrarMarcador(partido) {
-            window.ultimoPartidoProcesado = partido; 
-            let gRetador = 0, gRival = 0, huboGoles = false;
-            
-            const marcadorContenedor = document.getElementById('marcador-dinamico-equipos');
-            const lista = document.getElementById('resultado-lista');
-            
-            marcadorContenedor.innerHTML = '';
-            lista.innerHTML = '';
-
-            const d = diccionario[idioma];
-
-            let eqRetador = { c1: "#b13e53", c2: "#f4b41b", cp: "#ffffff", p: "solido" };
-            let eqRival = { c1: "#1a8cff", c2: "#ffffff", cp: "#ffffff", p: "solido" };
-            
-            try { if(partido.color_retador) eqRetador = JSON.parse(partido.color_retador); } catch(e){}
-            try { if(partido.color_rival) eqRival = JSON.parse(partido.color_rival); } catch(e){}
-
-            const htmlMiniRetador = generarHTMLMiniJugador(eqRetador.c1, eqRetador.c2, eqRetador.cp, eqRetador.p);
-            const htmlMiniRival = generarHTMLMiniJugador(eqRival.c1, eqRival.c2, eqRival.cp, eqRival.p);
-
-            const reglasGanadoras = { "Autobús": "Posesión", "Posesión": "Heavy Metal", "Heavy Metal": "Autobús" };
-            const rangoMinutosPorSlot = [
-                { min: 1, max: 15 }, { min: 16, max: 30 }, { min: 31, max: 45 },  
-                { min: 46, max: 60 }, { min: 61, max: 75 }, { min: 76, max: 90 }   
-            ];
-
-            let listaGolesHTML = "";
-
-            for (let i = 0; i < 6; i++) {
-                let tRetador = partido.estrategias_retador[i];
-                let tRival = partido.estrategias_rival[i];
+            for (let slot = 1; slot <= 6; slot++) {
+                const formatoCreador = obtenerNombreTactica(alineacionesCreador[slot]);
+                const formatoRival = obtenerNombreTactica(alineacionesRival[slot]);
                 
-                if (tRetador === tRival) continue; 
-
-                huboGoles = true;
-                let limites = rangoMinutosPorSlot[i];
-
-                if (reglasGanadoras[tRetador] === tRival) {
-                    let esEstrella = (partido.estrella_retador === (i + 1));
-                    let cant = esEstrella ? 2 : 1;
-                    gRetador += cant;
-                    for(let k=0; k<cant; k++) {
-                        let m = Math.floor(Math.random() * (limites.max - limites.min + 1)) + limites.min;
-                        listaGolesHTML += `<li>${htmlMiniRetador} <span>${d.txtGol.replace('{m}', m).replace('{equipo}', partido.nombre_retador)}</span></li>`;
-                    }
-                } else {
-                    let esEstrella = (partido.estrella_rival === (i + 1));
-                    let cant = esEstrella ? 2 : 1;
-                    gRival += cant;
-                    for(let k=0; k<cant; k++) {
-                        let m = Math.floor(Math.random() * (limites.max - limites.min + 1)) + limites.min;
-                        listaGolesHTML += `<li>${htmlMiniRival} <span>${d.txtGol.replace('{m}', m).replace('{equipo}', partido.nombre_rival || 'Rival')}</span></li>`;
-                    }
+                const probGolCreador = calcularProbabilidad(alineacionesCreador[slot], formatoCreador, formatoRival);
+                const probGolRival = calcularProbabilidad(alineacionesRival[slot], formatoRival, formatoCreador);
+                
+                const minuto = (slot - 1) * 15 + Math.floor(Math.random() * 15) + 1;
+                
+                if (Math.random() < probGolCreador && Math.random() > 0.3) {
+                    eventos.push({
+                        minuto: minuto,
+                        equipo: 'creador',
+                        evento: diccionario[idioma].txtGol.replace('{m}', minuto).replace('{equipo}', perfil.nombre)
+                    });
+                }
+                
+                if (Math.random() < probGolRival && Math.random() > 0.3) {
+                    eventos.push({
+                        minuto: minuto + (Math.random() > 0.5 ? 1 : -1),
+                        equipo: 'rival',
+                        evento: diccionario[idioma].txtGol.replace('{m}', minuto + 1).replace('{equipo}', 'Rival FC')
+                    });
                 }
             }
 
-            marcadorContenedor.innerHTML = `
-                <div class="vs-team-box">
-                    ${htmlMiniRetador}
-                    <div class="vs-team-name">${partido.nombre_retador}</div>
-                </div>
-                <div class="vs-score-center" id="marcador-final">${gRetador} - ${gRival}</div>
-                <div class="vs-team-box">
-                    ${htmlMiniRival}
-                    <div class="vs-team-name">${partido.nombre_rival || 'Rival'}</div>
-                </div>
+            eventos.sort((a, b) => a.minuto - b.minuto);
+
+            const marcador = {
+                creador: eventos.filter(e => e.equipo === 'creador').length,
+                rival: eventos.filter(e => e.equipo === 'rival').length,
+                eventos: eventos
+            };
+
+            return marcador;
+        }
+
+        function calcularProbabilidad(alineacion, formatoPropio, formatoRival) {
+            let prob = 0.25;
+
+            if (formatoPropio === diccionario[idioma].heavyMetal) {
+                prob += 0.15;
+            } else if (formatoPropio === diccionario[idioma].posesion) {
+                prob += 0.1;
+            }
+
+            if (formatoRival === diccionario[idioma].autobus) {
+                prob += 0.1;
+            }
+
+            return Math.min(prob, 0.4);
+        }
+
+        function resolverYMostrarMarcador(resultados) {
+            const contenedor = document.getElementById('marcador-dinamico-equipos');
+            contenedor.innerHTML = '';
+
+            const boxCreador = document.createElement('div');
+            boxCreador.className = 'vs-team-box';
+            boxCreador.innerHTML = `
+                <div class="vs-team-name">${perfil.nombre}</div>
+                <div class="player-pixel mini" style="background: ${obtenerEstiloCamiseta(perfil.color1, perfil.color2, perfil.patron)}; margin: 0;"></div>
             `;
 
-            lista.innerHTML = huboGoles ? listaGolesHTML : `<li style="justify-content:center; color:#f4b41b;">⚽ ${d.txtEmpateGlobal} ⚽</li>`;
+            const marcadorCenter = document.createElement('div');
+            marcadorCenter.className = 'vs-score-center';
+            marcadorCenter.innerText = `${resultados.creador} - ${resultados.rival}`;
+
+            const boxRival = document.createElement('div');
+            boxRival.className = 'vs-team-box';
+            boxRival.innerHTML = `
+                <div class="vs-team-name">Rival FC</div>
+                <div class="player-pixel mini" style="background: #1a8cff; margin: 0;"></div>
+            `;
+
+            contenedor.appendChild(boxCreador);
+            contenedor.appendChild(marcadorCenter);
+            contenedor.appendChild(boxRival);
+
+            const listaResultados = document.getElementById('resultado-lista');
+            listaResultados.innerHTML = '';
+
+            if (resultados.eventos.length === 0) {
+                const li = document.createElement('li');
+                li.innerText = diccionario[idioma].txtEmpateGlobal + ' 0-0';
+                listaResultados.appendChild(li);
+            } else {
+                resultados.eventos.forEach(evento => {
+                    const li = document.createElement('li');
+                    li.innerHTML = evento.evento;
+                    listaResultados.appendChild(li);
+                });
+            }
         }
 
         function copiarEnlace() {
-            document.getElementById('share-link').select();
-            document.execCommand('copy');
-            document.getElementById('btn-copiar').innerText = diccionario[idioma].copiado;
+            const enlace = document.getElementById('share-link').value;
+            navigator.clipboard.writeText(enlace).then(() => {
+                alert(diccionario[idioma].copiado);
+            });
         }
 
         function copiarEnlaceRetorno() {
-            document.getElementById('share-back-link').select();
-            document.execCommand('copy');
-            document.getElementById('btn-copiar-retorno').innerText = diccionario[idioma].copiado;
+            const enlace = document.getElementById('share-back-link').value;
+            navigator.clipboard.writeText(enlace).then(() => {
+                alert(diccionario[idioma].copiado);
+            });
         }
 
         function irAInicio() {
