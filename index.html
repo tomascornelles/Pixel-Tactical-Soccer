@@ -1044,6 +1044,9 @@
             if (slotActual === num) return;
             
             slotActual = num;
+
+            document.querySelectorAll('.slot-tab').forEach(tab, () => tab.classList.remove("active");
+            document.querySelector(`#tab-${num}`).classList.add("active");
             
             if (!alineacionesPorSlot[slotActual]) {
                 let anterior = alineacionesPorSlot[slotActual - 1];
