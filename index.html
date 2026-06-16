@@ -489,7 +489,7 @@
                     <div class="pattern-preview" style="background: linear-gradient(90deg, transparent 48%, #ffffff 48%, #ffffff 52%, transparent 52%);"></div>
                 </div>
                 <div class="pattern-opt" id="p-damero" onclick="seleccionarPatron('damero')">
-                    <div class="pattern-preview" style="background: linear-gradient(45deg, #ffffff 25%, transparent 25%, transparent 75%, #ffffff 75%, #ffffff), linear-gradient(45deg, #ffffff 25%, transparent 25%, transparent 75%, #ffffff 75%, #ffffff); background-size: 8px 8px; background-position: 0 0, 4px 4px;"></div>
+                    <div class="pattern-preview" style="background: linear-gradient(45deg, #ffffff 25%, transparent 25%, transparent 75%, #ffffff 75%, #ffffff), linear-gradient(45deg, #ffffff 25%, transparent 25%, transparent 75%, #ffffff 75%, #ffffff); background-size: 10px 10px; background-position: 0 0, 5px 5px;"></div>
                 </div>
             </div>
 
@@ -632,10 +632,10 @@
                 btnAyuda: "¿CÓMO JUGAR? ❓",
                 tituloAyuda: "INSTRUCCIONES DE USO",
                 cuerpoAyuda: `
-                    <p><strong>1. Llenar la estrategia inicial:</strong> Usa los botones <strong>DEF +1</strong>, <strong>MED +1</strong> y <strong>DEL +1</strong> para añadir jugadores al campo. Recomendado: 4 Def, 3 Med, 3 Del para empezar.</p>
-                    <p><strong>2. Moverse por los slots:</strong> El partido consta de 6 bloques o slots de tiempo. <strong>No podrás cambiar de slot ni pulsar "SIGUIENTE" o "ATRÁS" hasta que sumes exactamente 10 jugadores.</strong></p>
+                    <p><strong>1. Llenar la estrategia inicial:</strong> Usa los botones <strong>DEF +1</strong>, <strong>MED +1</strong> y <strong>DEL +1</strong> para añadir jugadores al campo. Recuerda que necesitas exactamente 10 jugadores (incluida el portero).</p>
+                    <p><strong>2. Moverse por los slots:</strong> El partido consta de 6 bloques o slots de tiempo. <strong>No podrás cambiar de slot ni pulsar "SIGUIENTE" o "ATRÁS" hasta que sumes 10 jugadores en el slot actual</strong>.</p>
                     <p><strong>3. Limitación de cambios:</strong> Al avanzar del Slot 1 al Slot 2, la alineación se clona de forma continua. Cuentas con un límite estricto de <strong>3 cambios acumulados</strong> en todo el partido.</p>
-                    <p><strong>4. Enviar el reto:</strong> Al completar los 10 jugadores del Slot 6, el botón cambiará automáticamente. Si eres el creador, generará un <strong>enlace para enviar a tu rival.</strong></p>
+                    <p><strong>4. Enviar el reto:</strong> Al completar los 10 jugadores del Slot 6, el botón cambiará automáticamente. Si eres el creador, generará un <strong>enlace para enviar a tu rival</strong>.</p>
                 `
             },
             en: {
@@ -672,10 +672,10 @@
                 btnAyuda: "HOW TO PLAY? ❓",
                 tituloAyuda: "GAME INSTRUCTIONS",
                 cuerpoAyuda: `
-                    <p><strong>1. Setting the Initial Strategy:</strong> Use the <strong>DEF +1</strong>, <strong>MID +1</strong>, and <strong>FWD +1</strong> buttons to add players to the field. Recommended: 4 Def, 3 Mid, 3 Fwd to start.</p>
-                    <p><strong>2. Navigating the Slots:</strong> The match is divided into 6 strategic time blocks. <strong>You cannot switch slots, nor press "NEXT" or "BACK" until you place exactly 10 players.</strong></p>
-                    <p><strong>3. Substitution Limits:</strong> Advancing from Slot 1 to Slot 2 continuously clones your lineup. From Slot 2 onwards, you have a strict limit of <strong>3 cumulative changes</strong> throughout the entire match.</p>
-                    <p><strong>4. Sending the Challenge:</strong> Once Slot 6 has exactly 10 players, the button actions change automatically. If you are the creator, it generates a <strong>shareable link to send to your rival.</strong></p>
+                    <p><strong>1. Setting the Initial Strategy:</strong> Use the <strong>DEF +1</strong>, <strong>MID +1</strong>, and <strong>FWD +1</strong> buttons to add players to the field. Remember you need exactly 10 players (including the goalkeeper).</p>
+                    <p><strong>2. Navigating the Slots:</strong> The match is divided into 6 strategic time blocks. <strong>You cannot switch slots, nor press "NEXT" or "BACK" until you place exactly 10 players in the current slot</strong>.</p>
+                    <p><strong>3. Substitution Limits:</strong> Advancing from Slot 1 to Slot 2 continuously clones your lineup. From Slot 2 onwards, you have a strict limit of <strong>3 cumulative changes</strong> across the entire match.</p>
+                    <p><strong>4. Sending the Challenge:</strong> Once Slot 6 has exactly 10 players, the button actions change automatically. If you are the creator, it generates a <strong>shareable link to send to your rival</strong>.</p>
                 `
             }
         };
@@ -898,7 +898,7 @@
             } else if (patron === 'v-linea') {
                 return `linear-gradient(90deg, transparent 48%, ${c1} 48%, ${c1} 52%, transparent 52%), linear-gradient(to bottom, ${c2}, ${c2})`;
             } else if (patron === 'damero') {
-                return `linear-gradient(45deg, ${c1} 25%, transparent 25%, transparent 75%, ${c1} 75%, ${c1}), linear-gradient(45deg, ${c1} 25%, transparent 25%, transparent 75%, ${c1} 75%, ${c1}); background-size: 12px 12px; background-position: 0 0, 6px 6px; background-color: ${c2}`;
+                return `linear-gradient(45deg, ${c1} 25%, transparent 25%, transparent 75%, ${c1} 75%, ${c1}), linear-gradient(45deg, ${c1} 25%, transparent 25%, transparent 75%, ${c1} 75%, ${c1}); background-size: 10px 10px; background-position: 0 0, 5px 5px`;
             }
             return c1;
         }
@@ -1000,226 +1000,143 @@
                     let jersey = document.createElement('div');
                     jersey.className = 'jersey-zone';
                     jersey.style.background = obtenerEstiloCamiseta(perfil.color1, perfil.color2, perfil.patron);
-
+                    
                     let shorts = document.createElement('div');
                     shorts.className = 'shorts-zone';
                     shorts.style.background = perfil.colorPants;
-
+                    
                     div.appendChild(jersey);
                     div.appendChild(shorts);
                     
-                    div.onclick = () => removerJugadorDesdeCampo(tipoPos);
+                    div.onclick = () => {
+                        alineacionesPorSlot[slotActual][tipoPos]--;
+                        dibujarCampo();
+                    };
+                    
                     contenedor.appendChild(div);
                 }
             };
 
-            crearFilaInteractiva('row-def', f.def, 'def');
-            crearFilaInteractiva('row-med', f.med, 'med');
             crearFilaInteractiva('row-del', f.del, 'del');
-
-            document.querySelectorAll('.slot-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`tab-${slotActual}`).classList.add('active');
+            crearFilaInteractiva('row-med', f.med, 'med');
+            crearFilaInteractiva('row-def', f.def, 'def');
+            
             refrescarEstrellasPestanasTodo();
         }
 
-        function anyadirJugador(pos) {
+        function anyadirJugador(tipo) {
             const f = alineacionesPorSlot[slotActual];
-            if (!f) f = { def: 0, med: 0, del: 0 };
-            
-            const total = calcularTotalJugadores(f);
-            if (total >= 10) {
-                alert(`${diccionario[idioma].errorMin}`);
-                return;
-            }
-
-            f[pos]++;
-            alineacionesPorSlot[slotActual] = f;
-            dibujarCampo();
-        }
-
-        function removerJugadorDesdeCampo(pos) {
-            const f = alineacionesPorSlot[slotActual];
-            if (f && f[pos] > 0) {
-                f[pos]--;
-                alineacionesPorSlot[slotActual] = f;
+            if (calcularTotalJugadores(f) < 10) {
+                f[tipo]++;
                 dibujarCampo();
             }
         }
 
-        function intentarCambiarPestana(numPestana) {
+        function intentarCambiarPestana(num) {
             const f = alineacionesPorSlot[slotActual];
-            if (f && calcularTotalJugadores(f) < 10) {
-                alert(`${diccionario[idioma].errorMin}`);
+            
+            if (calcularTotalJugadores(f) < 10) {
                 return;
             }
-            cambiarPestana(numPestana);
-        }
-
-        function cambiarPestana(numPestana) {
-            slotActual = numPestana;
-            if (!alineacionesPorSlot[numPestana]) {
-                alineacionesPorSlot[numPestana] = JSON.parse(JSON.stringify(alineacionesPorSlot[numPestana - 1]));
+            
+            if (slotActual === num) return;
+            
+            slotActual = num;
+            
+            if (!alineacionesPorSlot[slotActual]) {
+                let anterior = alineacionesPorSlot[slotActual - 1];
+                alineacionesPorSlot[slotActual] = { def: anterior.def, med: anterior.med, del: anterior.del };
             }
+            
             dibujarCampo();
         }
 
         function avanzarSlot() {
             const f = alineacionesPorSlot[slotActual];
-            const totalJ = calcularTotalJugadores(f);
+            
+            if (calcularTotalJugadores(f) < 10) {
+                alert(diccionario[idioma].errorMin);
+                return;
+            }
+            
             const cambiosGlobales = calcularCambiosTotalesDelPartido();
-
-            if (totalJ < 10) {
-                alert(`${diccionario[idioma].errorMin}`);
-                return;
-            }
-
             if (slotActual > 1 && cambiosGlobales >= 3) {
-                alert(`${diccionario[idioma].errorCambios}`);
+                alert(diccionario[idioma].errorCambios);
                 return;
             }
-
+            
             if (slotActual < 6) {
-                cambiarPestana(slotActual + 1);
+                intentarCambiarPestana(slotActual + 1);
+                document.getElementById('btn-atras-slot').style.display = 'inline-block';
             } else {
-                finalizarPartido();
+                finalizarAlineacion();
             }
         }
 
         function retrocederSlot() {
             if (slotActual > 1) {
-                cambiarPestana(slotActual - 1);
+                intentarCambiarPestana(slotActual - 1);
+                if (slotActual === 1) {
+                    document.getElementById('btn-atras-slot').style.display = 'none';
+                }
             }
         }
 
         function actualizarBotonAccion() {
             const btnAccion = document.getElementById('btn-accion-slot');
-            const btnAtras = document.getElementById('btn-atras-slot');
-
+            if (!btnAccion) return;
+            
             if (slotActual === 6) {
                 btnAccion.innerText = modoRival ? diccionario[idioma].envReto : diccionario[idioma].envDesafio;
-                btnAccion.style.background = '#38b764';
             } else {
                 btnAccion.innerText = diccionario[idioma].sigSlot;
-                btnAccion.style.background = '#38b764';
-            }
-
-            if (slotActual > 1) {
-                btnAtras.style.display = 'inline-block';
-                btnAtras.innerText = diccionario[idioma].atrasSlot;
-            } else {
-                btnAtras.style.display = 'none';
             }
         }
 
-        function finalizarPartido() {
+        function finalizarAlineacion() {
+            document.getElementById('screen-tactics').classList.remove('active');
+            
             if (!modoRival) {
-                generarYMostrarEnlaceDesafio();
+                document.getElementById('screen-share').classList.add('active');
+                crearYCompartirPartido();
             } else {
-                generarYMostrarResultados();
+                simularPartido();
             }
         }
 
-        function generarYMostrarEnlaceDesafio() {
-            document.getElementById('screen-tactics').classList.remove('active');
-            document.getElementById('screen-share').classList.add('active');
-            
-            const enlaceDesafio = `${window.location.origin}${window.location.pathname}?match=${Date.now()}`;
-            document.getElementById('share-link').value = enlaceDesafio;
-            
-            if (supabaseClient) {
-                guardarDesafioEnSupabase(enlaceDesafio);
-            }
-        }
-
-        function generarYMostrarResultados() {
-            document.getElementById('screen-tactics').classList.remove('active');
-            document.getElementById('screen-result').classList.add('active');
-            
-            const partido = generarSimulacionPartido();
-            window.ultimoPartidoProcesado = partido;
-            resolverYMostrarMarcador(partido);
-
-            document.getElementById('panel-retorno-rival').style.display = 'block';
-            const enlaceRetorno = `${window.location.origin}${window.location.pathname}?match=${Date.now()}&view=1`;
-            document.getElementById('share-back-link').value = enlaceRetorno;
-        }
-
-        function generarSimulacionPartido() {
-            const goles = [];
-            let marcador1 = 0, marcador2 = 0;
-
-            for (let slot = 1; slot <= 6; slot++) {
-                const alineacion = alineacionesPorSlot[slot];
-                const tactica1 = obtenerNombreTactica(alineacion);
-                
-                const probabilidad = 0.3 + (Math.random() * 0.4);
-                if (Math.random() < probabilidad) {
-                    const minuto = slot * 15 + Math.floor(Math.random() * 10);
-                    goles.push({
-                        minuto: minuto,
-                        equipo: perfil.nombre,
-                        tactica: tactica1
-                    });
-                    marcador1++;
-                }
-
-                if (Math.random() < probabilidad) {
-                    const minuto = slot * 15 + Math.floor(Math.random() * 10);
-                    goles.push({
-                        minuto: minuto,
-                        equipo: "Rival FC",
-                        tactica: "Random"
-                    });
-                    marcador2++;
-                }
-            }
-
-            goles.sort((a, b) => a.minuto - b.minuto);
-
-            return {
-                equipo1: perfil.nombre,
-                marcador1: marcador1,
-                equipo2: "Rival FC",
-                marcador2: marcador2,
-                goles: goles
+        async function crearYCompartirPartido() {
+            const nuevoPartido = {
+                creador: perfil.nombre,
+                color1_creator: perfil.color1,
+                color2_creator: perfil.color2,
+                colorPants_creator: perfil.colorPants,
+                patron_creator: perfil.patron,
+                alineaciones_creator: JSON.stringify(alineacionesPorSlot),
+                alineaciones_rival: null,
+                resultado: null,
+                rival_name: null,
+                star_slot: estrellaMarcada
             };
-        }
 
-        function resolverYMostrarMarcador(partido) {
-            const containerMarcador = document.getElementById('marcador-dinamico-equipos');
-            const listaResultados = document.getElementById('resultado-lista');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('matches')
+                    .insert([nuevoPartido])
+                    .select();
 
-            containerMarcador.innerHTML = `
-                <div class="vs-team-box">
-                    <div class="vs-team-name">${partido.equipo1}</div>
-                    <div style="margin-top: 8px;">
-                        <div class="player-pixel mini" style="transform: scale(1.5); margin: 0 auto;">
-                            <div class="jersey-zone" style="background: ${obtenerEstiloCamiseta(perfil.color1, perfil.color2, perfil.patron)};"></div>
-                            <div class="shorts-zone" style="background: ${perfil.colorPants};"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="vs-score-center">${partido.marcador1} - ${partido.marcador2}</div>
-                <div class="vs-team-box">
-                    <div class="vs-team-name">${partido.equipo2}</div>
-                    <div style="margin-top: 8px;">
-                        <div class="player-pixel mini" style="transform: scale(1.5); margin: 0 auto;">
-                            <div class="jersey-zone" style="background: #1a8cff;"></div>
-                            <div class="shorts-zone" style="background: #ffffff;"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
+                if (error) throw error;
 
-            listaResultados.innerHTML = '';
-            if (partido.goles.length === 0) {
-                listaResultados.innerHTML = `<li style="text-align: center; border: none;">${diccionario[idioma].txtEmpateGlobal}</li>`;
-            } else {
-                partido.goles.forEach(g => {
-                    const li = document.createElement('li');
-                    li.innerText = diccionario[idioma].txtGol.replace('{m}', g.minuto).replace('{equipo}', g.equipo);
-                    listaResultados.appendChild(li);
-                });
+                const matchId = data[0].id;
+                const baseUrl = window.location.origin + window.location.pathname;
+                const linkDesafio = `${baseUrl}?match=${matchId}`;
+                
+                document.getElementById('share-link').value = linkDesafio;
+                
+                window.history.replaceState({}, '', `${baseUrl}?match=${matchId}&created=true`);
+            } catch (e) {
+                console.error("Error al guardar el partido:", e);
+                const linkLocal = `MATCH_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                document.getElementById('share-link').value = `${window.location.origin}?match=${linkLocal}`;
             }
         }
 
@@ -1230,6 +1147,89 @@
             });
         }
 
+        async function simularPartido() {
+            document.getElementById('screen-tactics').classList.remove('active');
+            document.getElementById('screen-result').classList.add('active');
+
+            const creadorAlineacion = alineacionesPorSlot;
+            const rivalAlineacion = alineacionesPorSlot;
+
+            let eventos = [];
+            let golCreador = 0, golRival = 0;
+
+            for (let slot = 1; slot <= 6; slot++) {
+                const minutoInicio = (slot - 1) * 15 + 1;
+                const minutoFin = slot * 15;
+                
+                for (let m = minutoInicio; m <= minutoFin; m++) {
+                    if (Math.random() < 0.15) {
+                        if (Math.random() < 0.5) {
+                            golCreador++;
+                            eventos.push({ minuto: m, equipo: 'creador', autor: 'Gol' });
+                        } else {
+                            golRival++;
+                            eventos.push({ minuto: m, equipo: 'rival', autor: 'Gol' });
+                        }
+                    }
+                }
+            }
+
+            window.ultimoPartidoProcesado = { eventos, golCreador, golRival, creador: perfil.nombre, rival: 'Rival FC' };
+            resolverYMostrarMarcador(window.ultimoPartidoProcesado);
+        }
+
+        function resolverYMostrarMarcador(partido) {
+            const { eventos, golCreador, golRival, creador, rival } = partido;
+            
+            const marcadorHTML = `
+                <div class="vs-team-box">
+                    <div class="vs-team-name">${creador}</div>
+                    <div class="player-pixel mini" style="transform:scale(2); margin:10px 0;">
+                        <div class="jersey-zone" style="background: ${perfil.color1} !important;"></div>
+                        <div class="shorts-zone" style="background: ${perfil.colorPants} !important;"></div>
+                    </div>
+                </div>
+                <div class="vs-score-center">${golCreador} - ${golRival}</div>
+                <div class="vs-team-box">
+                    <div class="vs-team-name">${rival}</div>
+                    <div class="player-pixel mini" style="transform:scale(2); margin:10px 0;">
+                        <div class="jersey-zone" style="background: #1a8cff !important;"></div>
+                        <div class="shorts-zone" style="background: #ffffff !important;"></div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('marcador-dinamico-equipos').innerHTML = marcadorHTML;
+            
+            const listaResultados = document.getElementById('resultado-lista');
+            listaResultados.innerHTML = '';
+            
+            if (eventos.length === 0) {
+                const empate = document.createElement('li');
+                empate.innerText = diccionario[idioma].txtEmpateGlobal;
+                listaResultados.appendChild(empate);
+            } else {
+                eventos.forEach(ev => {
+                    const li = document.createElement('li');
+                    const nombreEquipo = ev.equipo === 'creador' ? creador : rival;
+                    const textoGol = diccionario[idioma].txtGol
+                        .replace('{m}', ev.minuto)
+                        .replace('{equipo}', nombreEquipo);
+                    li.innerText = textoGol;
+                    listaResultados.appendChild(li);
+                });
+            }
+
+            if (modoRival) {
+                document.getElementById('panel-retorno-rival').style.display = 'block';
+                const baseUrl = window.location.origin + window.location.pathname;
+                const linkRetorno = `${baseUrl}?match=${partidoId}&view=true`;
+                document.getElementById('share-back-link').value = linkRetorno;
+            } else {
+                document.getElementById('panel-retorno-rival').style.display = 'none';
+            }
+        }
+
         function copiarEnlaceRetorno() {
             const enlace = document.getElementById('share-back-link').value;
             navigator.clipboard.writeText(enlace).then(() => {
@@ -1237,21 +1237,35 @@
             });
         }
 
-        function irAInicio() {
-            location.reload();
-        }
-
         async function cargarYMostrarResultadoFinal() {
-            document.getElementById('screen-setup').classList.remove('active');
-            document.getElementById('screen-result').classList.add('active');
-            
-            const partido = generarSimulacionPartido();
-            window.ultimoPartidoProcesado = partido;
-            resolverYMostrarMarcador(partido);
+            try {
+                const { data, error } = await supabaseClient
+                    .from('matches')
+                    .select('*')
+                    .eq('id', partidoId)
+                    .single();
+
+                if (error) throw error;
+
+                const party = data;
+                const resultado = JSON.parse(party.resultado || '{}');
+                
+                window.ultimoPartidoProcesado = {
+                    eventos: resultado.eventos || [],
+                    golCreador: resultado.golCreador || 0,
+                    golRival: resultado.golRival || 0,
+                    creador: party.creador,
+                    rival: party.rival_name || 'Rival FC'
+                };
+
+                resolverYMostrarMarcador(window.ultimoPartidoProcesado);
+            } catch (e) {
+                console.error("Error al cargar resultado:", e);
+            }
         }
 
-        async function guardarDesafioEnSupabase(enlace) {
-            // Placeholder para guardar en Supabase
+        function irAInicio() {
+            window.location.href = window.location.origin + window.location.pathname;
         }
     </script>
 </body>
