@@ -1065,7 +1065,7 @@
             }
             
             const cambiosGlobales = calcularCambiosTotalesDelPartido();
-            if (slotActual > 1 && cambiosGlobales >= 3) {
+            if (slotActual > 1 && cambiosGlobales > 3) {
                 alert(diccionario[idioma].errorCambios);
                 return;
             }
