@@ -161,6 +161,16 @@
             overflow: hidden;
         }
 
+        /* Variante pequeña para marcadores y listas de goles */
+        .player-pixel.mini {
+            width: 18px;
+            height: 20px;
+            border: 1px solid var(--pixel-white);
+            box-shadow: 0 1px 0 var(--pixel-black);
+            display: inline-flex;
+            cursor: default;
+        }
+
         .jersey-zone {
             flex: 1.5; 
             width: 100%;
@@ -233,6 +243,37 @@
             margin-top: 5px;
         }
 
+        /* Ajustes específicos de la cabecera del marcador */
+        .vs-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .vs-team-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            max-width: 42%;
+        }
+
+        .vs-team-name {
+            font-size: 9px;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+
+        .vs-score-center {
+            font-size: 20px;
+            color: #f4b41b;
+            white-space: nowrap;
+        }
+
         #resultado-lista {
             list-style: none;
             padding: 0;
@@ -242,6 +283,9 @@
             margin-bottom: 8px;
             padding: 8px;
             border-bottom: 1px dashed #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .language-section {
@@ -380,7 +424,9 @@
 
         <div id="screen-result" class="screen pixel-box">
             <h2 style="text-align:center;" id="lbl-resumen">RESUMEN DEL PARTIDO</h2>
-            <h1 style="text-align:center; font-size:24px; color:#f4b41b;" id="marcador-final">0 - 0</h1>
+            
+            <div class="vs-container" id="marcador-dinamico-equipos"></div>
+            
             <hr style="border: 2px solid white;">
             
             <ul id="resultado-lista"></ul>
@@ -937,79 +983,113 @@
             resolverYMostrarMarcador(data);
         }
 
+        // FUNCIÓN AUXILIAR PARA RENDERIZAR JUGADORES EN MINIATURA
+        function generarHTMLMiniJugador(c1, c2, cp, p) {
+            const bgJersey = obtenerEstiloCamiseta(c1, c2, p);
+            return `
+                <div class="player-pixel mini">
+                    <div class="jersey-zone" style="background: ${bgJersey};"></div>
+                    <div class="shorts-zone" style="background: ${cp};"></div>
+                </div>
+            `;
+        }
+
         function resolverYMostrarMarcador(partido) {
             window.ultimoPartidoProcesado = partido; 
             let gRetador = 0;
             let gRival = 0;
             let huboGoles = false;
+            
+            const marcadorContenedor = document.getElementById('marcador-dinamico-equipos');
             const lista = document.getElementById('resultado-lista');
+            
+            marcadorContenedor.innerHTML = '';
             lista.innerHTML = '';
 
             const d = diccionario[idioma];
 
+            // Parsear las equipaciones personalizadas guardadas
+            let eqRetador = { c1: "#b13e53", c2: "#f4b41b", cp: "#ffffff", p: "solido" };
+            let eqRival = { c1: "#1a8cff", c2: "#ffffff", cp: "#ffffff", p: "solido" };
+            
+            try { if(partido.color_retador) eqRetador = JSON.parse(partido.color_retador); } catch(e){}
+            try { if(partido.color_rival) eqRival = JSON.parse(partido.color_rival); } catch(e){}
+
+            // Construcción visual del Versus con nombres y equipaciones
+            const htmlMiniRetador = generarHTMLMiniJugador(eqRetador.c1, eqRetador.c2, eqRetador.cp, eqRetador.p);
+            const htmlMiniRival = generarHTMLMiniJugador(eqRival.c1, eqRival.c2, eqRival.cp, eqRival.p);
+
+            // Reglas de simulación táctica
             const reglasGanadoras = {};
             reglasGanadoras[diccionario['es'].autobus] = diccionario['es'].posesion;
             reglasGanadoras[diccionario['es'].posesion] = diccionario['es'].heavyMetal;
             reglasGanadoras[diccionario['es'].heavyMetal] = diccionario['es'].autobus;
 
             const rangoMinutosPorSlot = [
-                { min: 1, max: 15 },   
-                { min: 16, max: 30 },  
-                { min: 31, max: 45 },  
-                { min: 46, max: 60 },  
-                { min: 61, max: 75 },  
-                { min: 76, max: 90 }   
+                { min: 1, max: 15 }, { min: 16, max: 30 }, { min: 31, max: 45 },  
+                { min: 46, max: 60 }, { min: 61, max: 75 }, { min: 76, max: 90 }   
             ];
+
+            let listaGolesHTML = "";
 
             for (let i = 0; i < 6; i++) {
                 let tRetador = partido.estrategias_retador[i];
                 let tRival = partido.estrategias_rival[i];
                 
-                if (tRetador === tRival) {
-                    continue; 
-                }
+                if (tRetador === tRival) continue; 
 
                 huboGoles = true;
                 let limites = rangoMinutosPorSlot[i];
 
                 if (reglasGanadoras[tRetador] === tRival) {
                     let esEstrella = (partido.estrella_retador === (i + 1));
-                    
                     if (esEstrella) {
                         gRetador += 2;
                         let m1 = Math.floor(Math.random() * (limites.max - 4 - limites.min + 1)) + limites.min;
                         let m2 = m1 + Math.floor(Math.random() * 3) + 1;
                         
-                        lista.innerHTML += `<li style="color:#38b764; border-left: 5px solid #38b764;">${d.txtGol.replace('{m}', m1).replace('{equipo}', partido.nombre_retador)}</li>`;
-                        lista.innerHTML += `<li style="color:#38b764; border-left: 5px solid #38b764;">${d.txtGol.replace('{m}', m2).replace('{equipo}', partido.nombre_retador)}</li>`;
+                        listaGolesHTML += `<li>${htmlMiniRetador} <span>${d.txtGol.replace('{m}', m1).replace('{equipo}', partido.nombre_retador)}</span></li>`;
+                        listaGolesHTML += `<li>${htmlMiniRetador} <span>${d.txtGol.replace('{m}', m2).replace('{equipo}', partido.nombre_retador)}</span></li>`;
                     } else {
                         gRetador += 1;
                         let m = Math.floor(Math.random() * (limites.max - limites.min + 1)) + limites.min;
-                        lista.innerHTML += `<li style="color:#38b764; border-left: 5px solid #38b764;">${d.txtGol.replace('{m}', m).replace('{equipo}', partido.nombre_retador)}</li>`;
+                        listaGolesHTML += `<li>${htmlMiniRetador} <span>${d.txtGol.replace('{m}', m).replace('{equipo}', partido.nombre_retador)}</span></li>`;
                     }
                 } else {
                     let esEstrella = (partido.estrella_rival === (i + 1));
-
                     if (esEstrella) {
                         gRival += 2;
                         let m1 = Math.floor(Math.random() * (limites.max - 4 - limites.min + 1)) + limites.min;
                         let m2 = m1 + Math.floor(Math.random() * 3) + 1;
 
-                        lista.innerHTML += `<li style="color:#ef7d57; border-left: 5px solid #ef7d57;">${d.txtGol.replace('{m}', m1).replace('{equipo}', partido.nombre_rival)}</li>`;
-                        lista.innerHTML += `<li style="color:#ef7d57; border-left: 5px solid #ef7d57;">${d.txtGol.replace('{m}', m2).replace('{equipo}', partido.nombre_rival)}</li>`;
+                        listaGolesHTML += `<li>${htmlMiniRival} <span>${d.txtGol.replace('{m}', m1).replace('{equipo}', partido.nombre_rival)}</span></li>`;
+                        listaGolesHTML += `<li>${htmlMiniRival} <span>${d.txtGol.replace('{m}', m2).replace('{equipo}', partido.nombre_rival)}</span></li>`;
                     } else {
                         gRival += 1;
                         let m = Math.floor(Math.random() * (limites.max - limites.min + 1)) + limites.min;
-                        lista.innerHTML += `<li style="color:#ef7d57; border-left: 5px solid #ef7d57;">${d.txtGol.replace('{m}', m).replace('{equipo}', partido.nombre_rival)}</li>`;
+                        listaGolesHTML += `<li>${htmlMiniRival} <span>${d.txtGol.replace('{m}', m).replace('{equipo}', partido.nombre_rival)}</span></li>`;
                     }
                 }
             }
 
-            if (!huboGoles) {
-                lista.innerHTML = `<li style="background: rgba(255,255,255,0.05); text-align:center; font-size: 14px; padding: 20px; color: #f4b41b;">⚽ ${d.txtEmpateGlobal} ⚽</li>`;
-            }
+            // Renderizar la cabecera del VS con nombres + camisetas actualizados
+            marcadorContenedor.innerHTML = `
+                <div class="vs-team-box">
+                    ${htmlMiniRetador}
+                    <div class="vs-team-name">${partido.nombre_retador}</div>
+                </div>
+                <div class="vs-score-center" id="marcador-final">${gRetador} - ${gRival}</div>
+                <div class="vs-team-box">
+                    ${htmlMiniRival}
+                    <div class="vs-team-name">${partido.nombre_rival || 'Rival'}</div>
+                </div>
+            `;
 
-            document.getElementById('marcador-final').innerText = `${gRetador} - ${gRival}`;
+            if (!huboGoles) {
+                lista.innerHTML = `<li style="background: rgba(255,255,255,0.05); text-align:center; font-size: 14px; padding: 20px; color: #f4b41b; justify-content:center;">⚽ ${d.txtEmpateGlobal} ⚽</li>`;
+            } else {
+                lista.innerHTML = listaGolesHTML;
+            }
         }
 
         function copiarEnlace() {
