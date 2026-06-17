@@ -715,28 +715,6 @@
             1: { def: 1, med: 1, del: 1 }, 2: null, 3: null, 4: null, 5: null, 6: null
         };
 
-        function construirSelectoresColores() {
-            const selectores = [
-                document.getElementById('select-color1'),
-                document.getElementById('select-color2'),
-                document.getElementById('select-color-pants')
-            ];
-
-            selectores.forEach(sel => {
-                const valorPrevio = sel.value;
-                sel.innerHTML = '';
-                paletaColores.forEach(c => {
-                    let opt = document.createElement('option');
-                    opt.value = c.hex;
-                    opt.style.backgroundColor = c.hex;
-                    opt.style.color = c.hex;
-                    opt.innerText = "■■■■■■■■■";
-                    sel.appendChild(opt);
-                });
-                if(valorPrevio) sel.value = valorPrevio;
-            });
-        }
-
         function actualizarColoresDesdeSelect() {
             perfil.color1 = document.getElementById('select-color1').value;
             perfil.color2 = document.getElementById('select-color2').value;
@@ -832,8 +810,6 @@
             document.getElementById('btn-idioma').innerText = idioma === 'es' ? "LANG: ES" : "LANG: EN";
             document.getElementById('btn-ayuda').innerText = d.btnAyuda;
 
-            construirSelectoresColores();
-            
             document.getElementById('input-team-name').value = perfil.nombre;
             document.getElementById('select-color1').value = perfil.color1;
             document.getElementById('select-color2').value = perfil.color2;
@@ -917,7 +893,6 @@
 
         window.onload = async () => {
             inicializarIdioma();
-            construirSelectoresColores();
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('match')) {
