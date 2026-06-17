@@ -660,9 +660,10 @@
                 tituloAyuda: "INSTRUCCIONES DE USO",
                 cuerpoAyuda: `
                     <p><strong>1. Llenar la estrategia inicial:</strong> Usa los botones <strong>DEF +1</strong>, <strong>MED +1</strong> y <strong>DEL +1</strong> para añadir jugadores al campo. Recuerda que es obligatorio tener al menos 1 jugador por línea. Si quieres quitar a alguien, haz <strong>click directamente sobre el jugador</strong> en el campo.</p>
-                    <p><strong>2. Moverse por los slots:</strong> El partido consta de 6 bloques o slots de tiempo. <strong>No podrás cambiar de slot ni pulsar "SIGUIENTE" o "ATRÁS" hasta que sumes exactamente 10 jugadores en el campo de juego.</strong></p>
-                    <p><strong>3. Limitación de cambios:</strong> Al avanzar del Slot 1 al Slot 2, la alineación se clona de forma continua. Cuentas con un límite estricto de <strong>3 cambios acumulados</strong> desde el bloque 2. Si pulsas <strong>"ATRÁS"</strong>, la estrategia se reseteará y borrará hacia adelante desde ese bloque para permitirte corregir.</p>
+                    <p><strong>2. Estrategias:</strong> La estrategia defensiva (DEF) supera la posesión (POS), la posesión (POS) a la ofensiva y la ofensiva a la defensa. Has de usar los 3 cambios para superar las estrategias de tu rival.</p>
+                    <p><strong>3. Moverse por los slots:</strong> El partido consta de 6 bloques o slots de tiempo. <strong>No podrás cambiar de slot ni pulsar "SIGUIENTE" o "ATRÁS" hasta que sumes exactamente 10 jugadores en el campo de juego.</strong></p>
                     <p><strong>4. Enviar el reto:</strong> Al completar los 10 jugadores del Slot 6, el botón cambiará automáticamente. Si eres el creador, generará un <strong>enlace para enviar a tu rival</strong>. Si eres el rival, procesará el partido inmediatamente y te dará un enlace para devolverle el resultado final al retador.</p>
+
                 `
             },
             en: {
@@ -703,10 +704,10 @@
                 btnAyuda: "HOW TO PLAY?",
                 tituloAyuda: "GAME INSTRUCTIONS",
                 cuerpoAyuda: `
-                    <p><strong>1. Setting the Initial Strategy:</strong> Use the <strong>DEF +1</strong>, <strong>MID +1</strong>, and <strong>FWD +1</strong> buttons to add players to the field. You must have at least 1 player per line. To remove a player, <strong>click directly on that player</strong> inside the tactical board.</p>
-                    <p><strong>2. Navigating the Slots:</strong> The match is divided into 6 strategic time blocks. <strong>You cannot switch slots, nor press "NEXT" or "BACK" until you place exactly 10 players on the field.</strong></p>
-                    <p><strong>3. Substitution Limits:</strong> Advancing from Slot 1 to Slot 2 continuously clones your lineup. From Slot 2 onwards, you have a strict limit of <strong>3 cumulative changes</strong>. If you press <strong>"BACK"</strong>, your setup will reset and wipe forward from that block.</p>
-                    <p><strong>4. Sending the Challenge:</strong> Once Slot 6 has exactly 10 players, the button actions change automatically. If you are the creator, it generates a <strong>shareable link for your rival</strong>. If you are the rival, it calculates the match results instantly.</p>
+<p><strong>1. Set up the initial strategy:</strong> Use the <strong>DEF +1</strong>, <strong>MED +1</strong>, and <strong>DEL +1</strong> buttons to add players to the field. Remember that it is mandatory to have at least 1 player per line. If you want to remove someone, <strong>click directly on the player</strong> on the field.</p>
+<p><strong>2. Strategies:</strong> The defensive strategy (DEF) beats possession (POS), possession (POS) beats offense, and offense beats defense. You must use the 3 changes to overcome your opponent's strategies.</p>
+<p><strong>3. Moving through slots:</strong> The match consists of 6 time blocks or slots. <strong>You will not be able to change slots or click "NEXT" or "BACK" until you have exactly 10 players on the field.</strong></p>
+<p><strong>4. Send the challenge:</strong> Once you complete 10 players in Slot 6, the button will automatically change. If you are the creator, it will generate a <strong>link to send to your opponent</strong>. If you are the opponent, it will process the match immediately and give you a link to send the final result back to the challenger.</p>
                 `
             }
         };
@@ -946,7 +947,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('match')) {
                 partidoId = urlParams.get('match');
-                if (urlParams.has('view')) {
+            	
+		if (!supabaseClient) return;
+                const { data, error } = await supabaseClient.from('partidos').select('*').eq('id', partidoId).single();
+            
+                if (error || !data) {
+                    console.error("Error al cargar resultado:", error);
+                    return;
+                }
+
+                if (data.completado) {
                     modoVerResultado = true;
                     traducirUI();
                     await cargarYMostrarResultadoFinal();
@@ -1246,8 +1256,6 @@
             for (let i = 0; i < 6; i++) {
                 let tRetador = partido.estrategias_retador[i];
                 let tRival = partido.estrategias_rival[i];
-
-console.log(tRetador, tRival);
                 
                 if (tRetador === tRival) continue; 
 
