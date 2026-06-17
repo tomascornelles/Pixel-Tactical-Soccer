@@ -449,16 +449,28 @@
                 <div class="setup-selectors-side">
                     <div>
                         <label id="lbl-color1" style="font-size:15px;">Color Principal:</label>
-                        <input type="color" id="select-color1" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
+                        <input type="color" id="select-color1" list="colors" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
                     </div>
                     <div style="margin-top: 4px;">
                         <label id="lbl-color2" style="font-size:15px;">Color Secundario:</label>
-                        <input type="color" id="select-color2" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
+                        <input type="color" id="select-color2" list="colors" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
                     </div>
                     <div style="margin-top: 4px;">
                         <label id="lbl-color-pants" style="font-size:15px;">Pantalón:</label>
-                        <input type="color" id="select-color-pants" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
+                        <input type="color" id="select-color-pants" list="colors" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
                     </div>
+                    <datalist id="colors">
+                      <option>#FFFFFF</option>
+                      <option>#000000</option>
+                      <option>#FF0000</option>
+                      <option>#0000CD</option>
+                      <option>#87CEFA</option>
+                      <option>#008000</option>
+                      <option>#FFD700</option>
+                      <option>#FF8C00</option>
+                      <option>#BA55D3</option>
+                      <option>#696969</option>
+                    </datalist>
                 </div>
             </div>
             
