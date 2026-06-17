@@ -152,15 +152,14 @@
             font-size: 20px; 
             background: #3a4466;
             border: 4px solid var(--pixel-white); 
-            padding: 10px 2px; 
-            flex: 1;
+            padding: 10px; 
             text-align: center;
             margin: 0 3px;
             cursor: pointer; 
             user-select: none;
             color: var(--pixel-white);
             box-shadow: 0 3px 0 var(--pixel-black);
-            display: flex;
+
             align-items: center;
             justify-content: center;
             gap: 5px;
@@ -186,11 +185,21 @@
             cursor: pointer;
             transition: transform 0.1s ease;
         }
+	
+	.tab-star.star-active {
+		color: white
+	}
 
         .slot-tab.active .tab-star {
             color: black;
             font-size: 1.3em;
         }
+
+	.tab-tactic {
+	    display: block;            
+	    font-family: var(--font-text) !important;
+            font-size: 0.7em;
+	}
 
         #soccer-field {
             width: 100%;
@@ -511,12 +520,12 @@
 
         <div id="screen-tactics" class="screen">
             <div class="slots-container" id="slots-header">
-                <div class="slot-tab active" id="tab-1" onclick="intentarCambiarPestana(1)">1 <span class="tab-star" id="star-tab-1" onclick="clickEstrellaTab(1, event)">☆</span></div>
-                <div class="slot-tab" id="tab-2" onclick="intentarCambiarPestana(2)">2 <span class="tab-star" id="star-tab-2" onclick="clickEstrellaTab(2, event)">☆</span></div>
-                <div class="slot-tab" id="tab-3" onclick="intentarCambiarPestana(3)">3 <span class="tab-star" id="star-tab-3" onclick="clickEstrellaTab(3, event)">☆</span></div>
-                <div class="slot-tab" id="tab-4" onclick="intentarCambiarPestana(4)">4 <span class="tab-star" id="star-tab-4" onclick="clickEstrellaTab(4, event)">☆</span></div>
-                <div class="slot-tab" id="tab-5" onclick="intentarCambiarPestana(5)">5 <span class="tab-star" id="star-tab-5" onclick="clickEstrellaTab(5, event)">☆</span></div>
-                <div class="slot-tab" id="tab-6" onclick="intentarCambiarPestana(6)">6 <span class="tab-star" id="star-tab-6" onclick="clickEstrellaTab(6, event)">☆</span></div>
+                <div class="slot-tab active" id="tab-1" onclick="intentarCambiarPestana(1)">1 <span class="tab-star" id="star-tab-1" onclick="clickEstrellaTab(1, event)">☆</span><span class="tab-tactic" id="tab-tactic-1"></span></div>
+                <div class="slot-tab" id="tab-2" onclick="intentarCambiarPestana(2)">2 <span class="tab-star" id="star-tab-2" onclick="clickEstrellaTab(2, event)">☆</span><span class="tab-tactic" id="tab-tactic-2"></span></div>
+                <div class="slot-tab" id="tab-3" onclick="intentarCambiarPestana(3)">3 <span class="tab-star" id="star-tab-3" onclick="clickEstrellaTab(3, event)">☆</span><span class="tab-tactic" id="tab-tactic-3"></span></div>
+                <div class="slot-tab" id="tab-4" onclick="intentarCambiarPestana(4)">4 <span class="tab-star" id="star-tab-4" onclick="clickEstrellaTab(4, event)">☆</span><span class="tab-tactic" id="tab-tactic-4"></span></div>
+                <div class="slot-tab" id="tab-5" onclick="intentarCambiarPestana(5)">5 <span class="tab-star" id="star-tab-5" onclick="clickEstrellaTab(5, event)">☆</span><span class="tab-tactic" id="tab-tactic-5"></span></div>
+                <div class="slot-tab" id="tab-6" onclick="intentarCambiarPestana(6)">6 <span class="tab-star" id="star-tab-6" onclick="clickEstrellaTab(6, event)">☆</span><span class="tab-tactic" id="tab-tactic-6"></span></div>
             </div>
 
             <p id="lbl-instruccion-campo" style="color: #cbd6e2; font-size: 16px; text-align: center; margin-bottom: 5px; margin-top:0;">
@@ -632,9 +641,9 @@
                 errorMin: "Debes tener al menos 1 jugador en cada línea (Defensa, Medio, Delantero).",
                 txtGol: "{m}' ¡GOL de {equipo}!", 
                 txtEmpateGlobal: "Empate",
-                autobus: "Autobús", 
-                posesion: "Posesión", 
-                heavyMetal: "Heavy Metal",
+                autobus: "DEF", 
+                posesion: "POS", 
+                heavyMetal: "OFE",
                 cambiosUsados: "Cambios acumulados: ", 
                 instruccionCampo: "[Click en un jugador para quitarlo]",
                 lblColor1: "Color Principal:",
@@ -644,7 +653,7 @@
                 lblPatron: "Patrón de Camiseta:",
                 retornoInst: "¡Envía el resultado de vuelta al retador para que vea el desenlace!",
                 copiarRetorno: "COPIAR ENLACE RESULTADO",
-                btnAyuda: "¿CÓMO JUGAR? ❓",
+                btnAyuda: "¿CÓMO JUGAR?",
                 tituloAyuda: "INSTRUCCIONES DE USO",
                 cuerpoAyuda: `
                     <p><strong>1. Llenar la estrategia inicial:</strong> Usa los botones <strong>DEF +1</strong>, <strong>MED +1</strong> y <strong>DEL +1</strong> para añadir jugadores al campo. Recuerda que es obligatorio tener al menos 1 jugador por línea. Si quieres quitar a alguien, haz <strong>click directamente sobre el jugador</strong> en el campo.</p>
@@ -673,9 +682,9 @@
                 errorMin: "You must have at least 1 player in each line (Def, Mid, Fwd).",
                 txtGol: "{m}' GOAL for {equipo}!", 
                 txtEmpateGlobal: "Draw",
-                autobus: "The Bus", 
-                posesion: "Possession", 
-                heavyMetal: "Heavy Metal",
+                autobus: "DEF", 
+                posesion: "POS", 
+                heavyMetal: "OFF",
                 cambiosUsados: "Accumulated changes: ", 
                 instruccionCampo: "[Click on a player to remove]",
                 lblColor1: "Main Color:",
@@ -685,7 +694,7 @@
                 lblPatron: "Jersey Pattern:",
                 retornoInst: "Send the result back to the challenger to let them see the outcome!",
                 copiarRetorno: "COPY RESULT LINK",
-                btnAyuda: "HOW TO PLAY? ❓",
+                btnAyuda: "HOW TO PLAY?",
                 tituloAyuda: "GAME INSTRUCTIONS",
                 cuerpoAyuda: `
                     <p><strong>1. Setting the Initial Strategy:</strong> Use the <strong>DEF +1</strong>, <strong>MID +1</strong>, and <strong>FWD +1</strong> buttons to add players to the field. You must have at least 1 player per line. To remove a player, <strong>click directly on that player</strong> inside the tactical board.</p>
@@ -852,6 +861,16 @@
             }
         }
 
+	function refrescarTacticas() {
+            for (let s = 1; s <= 6; s++) {            
+		const f = alineacionesPorSlot[s];
+		if (f && calcularTotalJugadores(f) === 10) {
+		    const tacticElement = document.querySelector(`#tab-tactic-${s}`);
+		    tacticElement.innerHTML = obtenerNombreTactica(f);
+		}
+	    }
+	}
+
         function refrescarEstrellasPestanasTodo() {
             for (let s = 1; s <= 6; s++) {
                 const starElement = document.getElementById(`star-tab-${s}`);
@@ -948,7 +967,7 @@
         function obtenerNombreTactica(f, lang = idioma) {
             const d = diccionario[lang];
             if (f.def >= 5) return d.autobus;
-            if (f.del >= 3) return d.posesion;
+            if (f.med >= 4) return d.posesion;
             return d.heavyMetal;
         }
 
@@ -1036,6 +1055,7 @@
             document.querySelectorAll('.slot-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(`tab-${slotActual}`).classList.add('active');
             refrescarEstrellasPestanasTodo();
+	    refrescarTacticas(f);
         }
 
         function anyadirJugador(tipo) {
@@ -1086,6 +1106,7 @@
 
             if (slotActual < 6) {
                 btnAvanzar.innerText = d.sigSlot;
+		btnAtras.innerText = d.atrasSlot;
             } else {
                 btnAvanzar.innerText = modoRival ? d.envReto : d.envDesafio;
             }
