@@ -641,9 +641,12 @@
                 errorMin: "Debes tener al menos 1 jugador en cada línea (Defensa, Medio, Delantero).",
                 txtGol: "{m}' ¡GOL de {equipo}!", 
                 txtEmpateGlobal: "Empate",
-                autobus: "DEF", 
-                posesion: "POS", 
-                heavyMetal: "OFE",
+                def: "DEF", 
+                pos: "POS", 
+                ofe: "OFE",
+		posDef: "DEF",
+		posMed: "MED",
+		posDel: "DEL",
                 cambiosUsados: "Cambios acumulados: ", 
                 instruccionCampo: "[Click en un jugador para quitarlo]",
                 lblColor1: "Color Principal:",
@@ -682,9 +685,12 @@
                 errorMin: "You must have at least 1 player in each line (Def, Mid, Fwd).",
                 txtGol: "{m}' GOAL for {equipo}!", 
                 txtEmpateGlobal: "Draw",
-                autobus: "DEF", 
-                posesion: "POS", 
-                heavyMetal: "OFF",
+                def: "DEF", 
+                pos: "POS", 
+                ofe: "OFF",
+		posDef: "DEF",
+		posMed: "MID",
+		posDel: "FWD",
                 cambiosUsados: "Accumulated changes: ", 
                 instruccionCampo: "[Click on a player to remove]",
                 lblColor1: "Main Color:",
@@ -826,6 +832,11 @@
             document.getElementById('btn-nuevo').innerText = d.nuevo;
             document.getElementById('lbl-instruccion-campo').innerText = d.instruccionCampo;
             
+	    document.getElementById('btn-add-def').innerText = d.posDef + " +1";
+	    document.getElementById('btn-add-med').innerText = d.posMed + " +1";
+	    document.getElementById('btn-add-del').innerText = d.posDel + " +1";
+
+            
             document.getElementById('lbl-color-shirt').innerText = d.lblColorShirt;
             document.getElementById('lbl-color-pants').innerText = d.lblColorPants;
             document.getElementById('lbl-patron').innerText = d.lblPatron;
@@ -966,9 +977,9 @@
 
         function obtenerNombreTactica(f, lang = idioma) {
             const d = diccionario[lang];
-            if (f.def >= 5) return d.autobus;
-            if (f.med >= 4) return d.posesion;
-            return d.heavyMetal;
+            if (f.def >= 5) return d.def;
+            if (f.del >= 4) return d.ofe;
+            return d.pos;
         }
 
         function calcularTotalJugadores(f) {
@@ -1224,7 +1235,7 @@
             const htmlMiniRetador = generarHTMLMiniJugador(eqRetador.c1, eqRetador.c2, eqRetador.cp, eqRetador.p);
             const htmlMiniRival = generarHTMLMiniJugador(eqRival.c1, eqRival.c2, eqRival.cp, eqRival.p);
 
-            const reglasGanadoras = { "Autobús": "Posesión", "Posesión": "Heavy Metal", "Heavy Metal": "Autobús" };
+            const reglasGanadoras = { "DEF": "POS", "POS": "OFE", "OFE": "DEF" };
             const rangoMinutosPorSlot = [
                 { min: 1, max: 15 }, { min: 16, max: 30 }, { min: 31, max: 45 },  
                 { min: 46, max: 60 }, { min: 61, max: 75 }, { min: 76, max: 90 }   
