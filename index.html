@@ -515,8 +515,15 @@
                 </div>
             </div>
 
-            <button class="pixel-btn" style="width:100%" onclick="guardarPerfil()" id="btn-comenzar">EMPEZAR DESAFÍO</button>
+            <button class="pixel-btn" style="width:100%" onclick="guardarPerfil()" id="btn-comenzar">EMPEZAR PARTIDO</button>
+            <button class="pixel-btn" style="width:100%; display: none" onclick="verPartidos()" id="btn-partidos">PARTIDOS ANTERIORES</button>
         </div>
+
+	<div id="screen-matches" class="screen">
+	    <h2 id="lbl-config-equipo">PARTIDOS ANTERIORES</h2>
+	    <div id="screen-matches-div"></div>
+            <button class="pixel-btn" style="width:100%" onclick="cerrarPartidos()" id="btn-atras">ATRAS</button>
+	</div>
 
         <div id="screen-tactics" class="screen">
             <div class="slots-container" id="slots-header">
@@ -625,12 +632,13 @@
                 configEquipo: "CONFIGURAR EQUIPO", 
                 aceptarDesafio: "ACEPTAR DESAFÍO",
                 nombreEquipo: "Nombre del Equipo:", 
-                comenzar: "EMPEZAR DESAFÍO",
+                comenzar: "EMPEZAR PARTIDO",
+		partidosAnteriores: "PARTIDOS ANTERIORES",
                 anyadir: "Añadir Jugadores (Max 10):",
                 sigSlot: "SIGUIENTE ⇨", 
                 atrasSlot: "⇦ ATRÁS",
-                envDesafio: "🖨️ ENVIAR DESAFÍO ⇨", 
-                envReto: "⚽ ENVIAR RESULTADO ⇨", 
+                envDesafio: "ENVIAR DESAFÍO ⇨", 
+                envReto: "ENVIAR RESULTADO ⇨", 
                 listo: "¡DESAFÍO LISTO!",
                 copiarInst: "Copia este enlace y envíaselo a tu rival:", 
                 copiar: "COPIAR ENLACE", 
@@ -670,12 +678,13 @@
                 configEquipo: "TEAM CONFIG", 
                 aceptarDesafio: "ACCEPT CHALLENGE",
                 nombreEquipo: "Team Name:", 
-                comenzar: "START CHALLENGE",
+                comenzar: "START MATCH",
+		partidosAnteriores: "OLD MATCHES",
                 anyadir: "Add Players (Max 10):",
                 sigSlot: "NEXT ⇨", 
                 atrasSlot: "⇦ BACK",
-                envDesafio: "🖨️ SEND CHALLENGE ⇨", 
-                envReto: "⚽ SEND RESULT ⇨", 
+                envDesafio: "SEND CHALLENGE ⇨", 
+                envReto: "SEND RESULT ⇨", 
                 listo: "CHALLENGE READY!",
                 copiarInst: "Copy this link and send it to your rival:", 
                 copiar: "COPY LINK", 
@@ -785,6 +794,18 @@
             }
         }
 
+	async function guardarPartidos(partido) {
+	    const partidos = JSON.parse(localStorage.getItem('pixel_soccer_partidos')) || [];
+	    partidos.push(partido);
+	    localStorage.setItem('pixel_soccer_partidos', JSON.stringify(partidos));
+	    const idPartidos = [];
+	    for (const partido in partidos) {
+		idPartidos.push(partidos[partido].id);
+	    }
+
+            const { data, error } = await supabaseClient.from('partidos').select('*').in('id', idPartidos);
+	}
+
         function aplicarCombinacionAleatoria() {
             const nombreRand = nombresAleatorios[Math.floor(Math.random() * nombresAleatorios.length)];
             const c1Rand = paletaColores[Math.floor(Math.random() * paletaColores.length)].hex;
@@ -813,6 +834,31 @@
         function cerrarAyuda() {
             document.getElementById('modal-ayuda').classList.remove('active');
         }
+
+	async function verPartidos() {
+	    const partidos = JSON.parse(localStorage.getItem('pixel_soccer_partidos')) || [];
+	    const idPartidos = [];
+	    for (const partido in partidos) {
+		idPartidos.push(partidos[partido].id);
+	    }
+
+            const { data, error } = await supabaseClient.from('partidos').select('*').in('id', idPartidos);
+            document.getElementById('screen-setup').classList.remove('active');
+            document.getElementById('screen-matches').classList.add('active');
+
+	    const listDiv = document.getElementById('screen-matches-div');
+	    for (const partido in data) {
+	    	const line = document.createElement("div");
+	    	line.classList.add("match-line");
+
+		if (data[partido].completado) {
+		    line.innerHTML = `${data[partido].nombre_retador} <strong>vs</strong> ${data[partido].nombre_rival}`;
+		    line.addEventListener("click", () => { resolverYMostrarMarcador(data[partido])});
+		}
+		listDiv.append(line);
+	    }
+	    
+	}
 
         function traducirUI() {
             const d = diccionario[idioma];
@@ -943,6 +989,9 @@
         window.onload = async () => {
             inicializarIdioma();
             construirSelectoresColores();
+	    
+	    const partidosAnteriores = localStorage.getItem("pixel_soccer_partidos") || [];
+	    document.querySelector("#btn-partidos").style.display = partidosAnteriores.length ? 'block' : 'none';
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('match')) {
@@ -1170,6 +1219,8 @@
                     console.error("Error al guardar el partido:", error);
                     return;
                 }
+
+		guardarPartidos(data[0]);
 
                 document.getElementById('share-link').value = `${window.location.origin}${window.location.pathname}?match=${data[0].id}`;
                 document.getElementById('screen-tactics').classList.remove('active');
