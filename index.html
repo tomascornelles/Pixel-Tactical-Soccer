@@ -1192,7 +1192,7 @@
                 document.getElementById('screen-tactics').classList.remove('active');
                 document.getElementById('screen-result').classList.add('active');
                 
-                document.getElementById('share-back-link').value = `${window.location.origin}${window.location.pathname}?match=${partidoId}&view=true`;
+                document.getElementById('share-back-link').value = `${window.location.origin}${window.location.pathname}?match=${partidoId}`;
                 document.getElementById('panel-retorno-rival').style.display = 'block';
 
                 resolverYMostrarMarcador(data[0]);
