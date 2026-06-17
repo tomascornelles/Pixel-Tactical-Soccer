@@ -447,14 +447,15 @@
                 </div>
 
                 <div class="setup-selectors-side">
-                    <div>
-                        <label id="lbl-color1" style="font-size:15px;">Color Principal:</label>
+                  <label id="lbl-color-shirt" style="font-size:15px;">Camiseta:</label>
+                  <div style="display: flex; gap: 10px; width: 100%;">
+                    <div style="flex: 1;">
                         <input type="color" id="select-color1" list="colors" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
                     </div>
-                    <div style="margin-top: 4px;">
-                        <label id="lbl-color2" style="font-size:15px;">Color Secundario:</label>
+                    <div style="flex: 1;">
                         <input type="color" id="select-color2" list="colors" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
                     </div>
+                  </div>
                     <div style="margin-top: 4px;">
                         <label id="lbl-color-pants" style="font-size:15px;">Pantalón:</label>
                         <input type="color" id="select-color-pants" list="colors" class="color-picker-select" onchange="actualizarColoresDesdeSelect()"></select>
@@ -638,6 +639,7 @@
                 lblColor1: "Color Principal:",
                 lblColor2: "Color Secundario:",
                 lblColorPants: "Color del Pantalón:",
+                lblColorShirt: "Color dela camiseta",
                 lblPatron: "Patrón de Camiseta:",
                 retornoInst: "¡Envía el resultado de vuelta al retador para que vea el desenlace!",
                 copiarRetorno: "COPIAR ENLACE RESULTADO",
@@ -678,6 +680,7 @@
                 lblColor1: "Main Color:",
                 lblColor2: "Secondary Color:",
                 lblColorPants: "Shorts Color:",
+                lblColorShirt: "Shirt Color:",
                 lblPatron: "Jersey Pattern:",
                 retornoInst: "Send the result back to the challenger to let them see the outcome!",
                 copiarRetorno: "COPY RESULT LINK",
@@ -714,6 +717,19 @@
         let alineacionesPorSlot = {
             1: { def: 1, med: 1, del: 1 }, 2: null, 3: null, 4: null, 5: null, 6: null
         };
+
+        function construirSelectoresColores() {
+            const selectores = [
+                document.getElementById('select-color1'),
+                document.getElementById('select-color2'),
+                document.getElementById('select-color-pants')
+            ];
+
+            selectores.forEach(sel => {
+                const valorPrevio = sel.value;
+                if(valorPrevio) sel.value = valorPrevio;
+            });
+        }
 
         function actualizarColoresDesdeSelect() {
             perfil.color1 = document.getElementById('select-color1').value;
@@ -800,8 +816,7 @@
             document.getElementById('btn-nuevo').innerText = d.nuevo;
             document.getElementById('lbl-instruccion-campo').innerText = d.instruccionCampo;
             
-            document.getElementById('lbl-color1').innerText = d.lblColor1;
-            document.getElementById('lbl-color2').innerText = d.lblColor2;
+            document.getElementById('lbl-color-shirt').innerText = d.lblColorShirt;
             document.getElementById('lbl-color-pants').innerText = d.lblColorPants;
             document.getElementById('lbl-patron').innerText = d.lblPatron;
             document.getElementById('lbl-retorno-inst').innerText = d.retornoInst;
@@ -809,6 +824,8 @@
             
             document.getElementById('btn-idioma').innerText = idioma === 'es' ? "LANG: ES" : "LANG: EN";
             document.getElementById('btn-ayuda').innerText = d.btnAyuda;
+
+          construirSelectoresColores();
 
             document.getElementById('input-team-name').value = perfil.nombre;
             document.getElementById('select-color1').value = perfil.color1;
@@ -886,13 +903,14 @@
             } else if (patron === 'v-linea') {
                 return `linear-gradient(90deg, transparent 45%, ${c2} 45%, ${c2} 55%, transparent 55%), linear-gradient(to bottom, ${c1}, ${c1})`;
             } else if (patron === 'damero') {
-                return `repeating-conic-gradient(${c1} 0 25%, ${c2} 0 50%) 50% / 10px 10px`;
+                return `repeating-conic-gradient(${c1} 0 25%, ${c2} 0 50%) left top / 12px 12px`;
             }
             return `linear-gradient(0deg, transparent 90%, ${c2} 90%, ${c2} 100%, transparent 100%), linear-gradient(to bottom, ${c1}, ${c1})`;
         }
 
         window.onload = async () => {
             inicializarIdioma();
+          construirSelectoresColores();
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('match')) {
