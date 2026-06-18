@@ -432,6 +432,10 @@
           font-size: 18px;
           line-height: 1.4;
         }
+        .match-line {
+          text-align: center;
+          margin-bottom: 15px;
+        }
     </style>
   </head>
   <body>
@@ -684,6 +688,7 @@
           copiarRetorno: "COPIAR ENLACE RESULTADO",
           btnAyuda: "¿CÓMO JUGAR?",
           tituloAyuda: "INSTRUCCIONES DE USO",
+          pendiente: "Partidos pendientes",
           cuerpoAyuda: `
                     <p><strong>1. Llenar la estrategia inicial:</strong> Usa los botones <strong>DEF +1</strong>, <strong>MED +1</strong> y <strong>DEL +1</strong> para añadir jugadores al campo. Recuerda que es obligatorio tener al menos 1 jugador por línea. Si quieres quitar a alguien, haz <strong>click directamente sobre el jugador</strong> en el campo.</p>
                     <p><strong>2. Estrategias:</strong> La estrategia defensiva (DEF) supera la posesión (POS), la posesión (POS) a la ofensiva y la ofensiva a la defensa. Has de usar los 3 cambios para superar las estrategias de tu rival.</p>
@@ -730,6 +735,7 @@
           copiarRetorno: "COPY RESULT LINK",
           btnAyuda: "HOW TO PLAY?",
           tituloAyuda: "GAME INSTRUCTIONS",
+          pendiente: "Pending matches",
           cuerpoAyuda: `
             <p><strong>1. Set up the initial strategy:</strong> Use the <strong>DEF +1</strong>, <strong>MED +1</strong>, and <strong>DEL +1</strong> buttons to add players to the field. Remember that it is mandatory to have at least 1 player per line. If you want to remove someone, <strong>click directly on the player</strong> on the field.</p>
             <p><strong>2. Strategies:</strong> The defensive strategy (DEF) beats possession (POS), possession (POS) beats offense, and offense beats defense. You must use the 3 changes to overcome your opponent's strategies.</p>
@@ -859,11 +865,16 @@
       async function verPartidos() {
         const partidos = JSON.parse(localStorage.getItem('pixel_soccer_partidos')) || [];
         const idPartidos = [];
+        let pendientes = 0;
+        const d = diccionario[idioma];
         for (const partido in partidos) {
           idPartidos.push(partidos[partido].id);
         }
 
-        const { data, error } = await supabaseClient.from('partidos').select('*').in('id', idPartidos);
+        const { data, error } = await supabaseClient
+          .from('partidos')
+          .select('*')
+          .in('id', idPartidos);
         document.getElementById('screen-setup').classList.remove('active');
         document.getElementById('screen-matches').classList.add('active');
         const reglasGanadoras = { "DEF": "POS", "POS": "OFE", "OFE": "DEF" };
@@ -875,6 +886,10 @@
 
           if (data[partido].completado) {
             let golesRetador = 0, golesRival = 0;
+            const eqRetador = JSON.parse(data[partido].color_retador);
+            const eqRival = JSON.parse(data[partido].color_rival);
+            const htmlMiniRetador = generarHTMLMiniJugador(eqRetador.c1, eqRetador.c2, eqRetador.cp, eqRetador.p);
+            const htmlMiniRival = generarHTMLMiniJugador(eqRival.c1, eqRival.c2, eqRival.cp, eqRival.p);
 
             for (let i = 0; i < 6; i++) {
               let tRetador = data[partido].estrategias_retador[i];
@@ -891,12 +906,19 @@
                 let cant = esEstrella ? 2 : 1;
                 golesRival += cant;
               }
-              line.innerHTML = `${golesRetador} - ${golesRival} vs ${data[partido].nombre_rival}`;
-              line.addEventListener("click", () => { resolverYMostrarMarcador(data[partido])});
+              line.innerHTML = `${data[partido].nombre_retador} vs ${data[partido].nombre_rival} <br> ${htmlMiniRetador} ${golesRetador} - ${golesRival} ${htmlMiniRival}`;
+              line.addEventListener("click", () => { window.location.href = window.location.origin + window.location.pathname + '?match=' + data[partido].id; });
             }
             listDiv.append(line);
+          } else { 
+            pendientes++;
           }
         }
+
+        const line = document.createElement("div");
+        line.classList.add("match-line");
+        line.innerHTML = `${pendientes} ${d.pendiente}`;
+        listDiv.append(line);
       }
 
       function traducirUI() {
@@ -1008,19 +1030,19 @@
 
       function obtenerEstiloCamiseta(c1, c2, patron) {
         if (patron === 'rayas') {
-          return `repeating-linear-gradient(90deg, ${c1}, ${c1} 6px, ${c2} 6px, ${c2} 12px)`;
+          return `repeating-linear-gradient(90deg, ${c1}, ${c1} 20%, ${c2} 20%, ${c2} 40%)`;
         } else if (patron === 'mitad') {
           return `linear-gradient(90deg, ${c1} 50%, ${c2} 50%)`;
         } else if (patron === 'diagonal') {
           return `linear-gradient(135deg, ${c1} 50%, ${c2} 50%)`;
         } else if (patron === 'h-lineas') {
-          return `repeating-linear-gradient(0deg, ${c1}, ${c1} 6px, ${c2} 6px, ${c2} 12px)`;
+          return `repeating-linear-gradient(0deg, ${c1}, ${c1} 20%, ${c2} 20%, ${c2} 40%)`;
         } else if (patron === 'linea-diagonal') {
           return `linear-gradient(45deg, transparent 45%, ${c2} 45%, ${c2} 55%, transparent 55%), linear-gradient(to right, ${c1}, ${c1})`;
         } else if (patron === 'v-linea') {
           return `linear-gradient(90deg, transparent 45%, ${c2} 45%, ${c2} 55%, transparent 55%), linear-gradient(to bottom, ${c1}, ${c1})`;
         } else if (patron === 'damero') {
-          return `repeating-conic-gradient(${c1} 0 25%, ${c2} 0 50%) left top / 12px 12px`;
+          return `repeating-conic-gradient(${c1} 0 25%, ${c2} 0 50%) left top / 40% 50%`;
         }
         return `linear-gradient(0deg, transparent 90%, ${c2} 90%, ${c2} 100%, transparent 100%), linear-gradient(to bottom, ${c1}, ${c1})`;
       }
