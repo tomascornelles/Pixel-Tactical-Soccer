@@ -522,7 +522,7 @@
       <div id="screen-matches" class="screen">
         <h2 id="lbl-config-equipo">PARTIDOS ANTERIORES</h2>
         <div id="screen-matches-div"></div>
-        <button class="pixel-btn" style="width:100%" onclick="cerrarPartidos()" id="btn-atras">ATRAS</button>
+        <button class="pixel-btn" style="width:100%" onclick="window.location.reload()" id="btn-atras">ATRAS</button>
       </div>
 
       <div id="screen-tactics" class="screen">
@@ -574,6 +574,7 @@
         <p id="lbl-copiar-inst">Copia este enlace y envíaselo a tu rival:</p>
         <input type="text" id="share-link" readonly style="text-align:center; margin-bottom:15px;">
         <button class="pixel-btn" onclick="copiarEnlace()" id="btn-copiar">COPIAR ENLACE</button>
+        <button class="pixel-btn" onclick="window.location.reload()" id="btn-nuevo">CREAR NUEVO DESAFÍO</button>
       </div>
 
       <div id="screen-result" class="screen pixel-box">
@@ -865,6 +866,7 @@
         const { data, error } = await supabaseClient.from('partidos').select('*').in('id', idPartidos);
         document.getElementById('screen-setup').classList.remove('active');
         document.getElementById('screen-matches').classList.add('active');
+        const reglasGanadoras = { "DEF": "POS", "POS": "OFE", "OFE": "DEF" };
 
         const listDiv = document.getElementById('screen-matches-div');
         for (const partido in data) {
@@ -872,12 +874,29 @@
           line.classList.add("match-line");
 
           if (data[partido].completado) {
-            line.innerHTML = `${data[partido].nombre_retador} <strong>vs</strong> ${data[partido].nombre_rival}`;
-            line.addEventListener("click", () => { resolverYMostrarMarcador(data[partido])});
-          }
-          listDiv.append(line);
-        }
+            let golesRetador = 0, golesRival = 0;
 
+            for (let i = 0; i < 6; i++) {
+              let tRetador = data[partido].estrategias_retador[i];
+              let tRival = data[partido].estrategias_rival[i];
+
+              if (tRetador === tRival) continue; 
+
+              if (reglasGanadoras[tRetador] === tRival) {
+                let esEstrella = (data[partido].estrella_retador === (i + 1));
+                let cant = esEstrella ? 2 : 1;
+                golesRetador += cant;
+              } else {
+                let esEstrella = (data[partido].estrella_rival === (i + 1));
+                let cant = esEstrella ? 2 : 1;
+                golesRival += cant;
+              }
+              line.innerHTML = `${golesRetador} - ${golesRival} vs ${data[partido].nombre_rival}`;
+              line.addEventListener("click", () => { resolverYMostrarMarcador(data[partido])});
+            }
+            listDiv.append(line);
+          }
+        }
       }
 
       function traducirUI() {
