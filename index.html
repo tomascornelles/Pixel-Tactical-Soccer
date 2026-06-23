@@ -1133,13 +1133,13 @@
 
         if (slotActual > 1) {
           contadorEl.style.display = 'block';
-          contadorEl.innerText = `${diccionario[idioma].cambiosUsados} ${cambiosGlobales} / 3`;
+          contadorEl.innerText = `${diccionario[idioma].cambiosUsados} ${cambiosGlobales} / 5`;
         } else {
           contadorEl.style.display = 'none';
         }
 
         for(let b of btns) {
-          b.disabled = (totalJ >= 10 || (slotActual > 1 && cambiosGlobales >= 3));
+          b.disabled = (totalJ >= 10 || (slotActual > 1 && cambiosGlobales >= 5));
         }
 
         const faltanJugadores = (totalJ < 10);
